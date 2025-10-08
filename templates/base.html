@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav>
+        <img src="{{ url_for('static', filename='images/avsar.png') }}" width="50" height="50">
+        <a href="{{ url_for('home') }}">Home</a> |
+        <a href="{{ url_for('about') }}">About Us</a> |
+        <a href="{{ url_for('contact') }}">Contact Us</a> |
+        <a href="{{ url_for('how') }}">How It Works</a> |
+        <a href="{{ url_for('gallery') }}">Gallery</a> |
+        <a href="{{ url_for('partner') }}">Partner Login</a> |
+        <a href="{{ url_for('member') }}">Member Login</a>
+    </nav>
+
+    <div class="home-heading">
+        <h1>!!! Suraksha Sarathy : Your reliable partner in case of road emergency !!!</h1>
+    </div>
+
+    <!-- Page content -->
+    <div>
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <hr>
+        <div class="ftr">
+            <div class="cpyrght">&copy; 2025 Suraksha Sarathi</div>
+            <div class="social">
+                <img src="{{ url_for('static', filename='images/twitter.png') }}" width="20" height="20">
+                <img src="{{ url_for('static', filename='images/fb.png') }}" width="20" height="20">
+                <img src="{{ url_for('static', filename='images/tg.png') }}" width="20" height="20">
+                <img src="{{ url_for('static', filename='images/yt.png') }}" width="20" height="20">
+                <img src="{{ url_for('static', filename='images/insta.png') }}" width="20" height="20">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

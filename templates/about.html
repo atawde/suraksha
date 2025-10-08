@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Home - My Website{% endblock %}
+
+{% block content %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    let autoPlayInterval = null;
+
+    function showSlide(index) {
+        slides.forEach(slide => slide.classList.remove('active'));
+        currentSlide = (index + slides.length) % slides.length; // wrap around
+        slides[currentSlide].classList.add('active');
+    }
+
+    function moveSlide(direction) {
+        showSlide(currentSlide + direction);
+        restartAutoPlay(); // restart timer when user clicks
+    }
+
+    function startAutoPlay() {
+        autoPlayInterval = setInterval(() => {
+            moveSlide(1);
+        }, 5000); // change slide every 4 seconds
+    }
+
+    function restartAutoPlay() {
+        clearInterval(autoPlayInterval);
+        startAutoPlay();
+    }
+
+    // Initialize
+    showSlide(currentSlide);
+    startAutoPlay();
+    // Make moveSlide global so buttons work
+    window.moveSlide = moveSlide;
+});
+
+</script>
+
+<div class="slider-container">
+  <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
+
+  <div class="slider">
+    <img src="{{ url_for('static', filename='images/vision.png') }}" class="slide active">
+    <img src="{{ url_for('static', filename='images/director.png') }}" class="slide">
+    <img src="{{ url_for('static', filename='images/slogan.png') }}" class="slide">
+  </div>
+
+  <button class="next" onclick="moveSlide(1)">&#10095;</button>
+</div>
+
+{% endblock %}

@@ -1,0 +1,34 @@
+Solution Workflow
+
+1. User visits website (www.yourDomainName.com --- this is the domain you will need to purchase from godaddy or other similar service providers)
+2. User enters his personal details and vehicle (up to 2 vehicles) details
+3. QR code is generated based on entered information which user can download and print 
+4. System will generate unique id number for the user and save the user information in SQLite database, which is built-in with Python
+5. Next time same user visits then he will enter his unique id generated for him on previous visit. System will retrieve saved information.
+6. User can update the required fields and save
+7. New QR code will be generated based on updated information.
+8. Users details in our database will be updated
+
+Timeline
+
+5 days to develop and test solution on my computer
+2 days to upload and test solution on your domain web site
+15 days support to any user issues (no new functions)
+
+
+
+Bought domain surakshasarthi.org from Hostinger on 30-Sep-25 for Rs 845 (699 + 17.44 ICANN fees + 128.96 GST)
+Charged on my credit card with auto pay mandate
+
+First milestone payment of 22.5 received ; after Upwork charges 19.82 credited
+
+enquiry@surakshasarathi.org / Suraksha@123
+
+Root password : Suraksha#123
+
+SSH key generated (passphrase : avsar suraksha sarthi)
+
+Your identification has been saved in c:\freelancing\avsar\avsar_ssh.txt
+Your public key has been saved in c:\freelancing\avsar\avsar_ssh.txt.pub
+The key fingerprint is:
+SHA256:3SxGK93axwXSCL0NBOJPS1uRrzXqYlAAaWbk21sX2i0 ajit.tawde65@gmail.com

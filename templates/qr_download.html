@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Personalized QR Code Generator</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" >
+        <!-- link rel="stylesheet" href="style.css" --> 
+    </head>
+    <body>
+        <div class="grid-container">
+
+            <div class="header" style="display: flex; align-items: center; gap: 10px; margin: auto;">
+                <img src="/static/avsar.png" width="75" height="75" >
+                <h1>!!! Suraksha Sarathi - your trusted partner in case of emergency !!!</h1>
+            </div>
+
+            <div class="sidebar1"></div>
+
+            <div class="form-content">
+                <div class="pers">
+                    <div class="ml"><strong>Enter your personal details</strong></div>
+                    <input type="text" id="name" name="name" required size="80" placeholder="Your name" class="spacer ml">
+                    <textarea id="address" name="address" rows="3" cols="75" placeholder="Your address" class="spacer ml"></textarea>
+                    <div class="contact-no">
+                        <input type="text" id="mobile" name="mobile" required size="20" placeholder="mobile number" class="spacer ml">
+                        <input type="text" id="landl" name="landl" size="20" placeholder="landline" class="spacer">
+                        <input type="text" id="emer1" name="emer1" required size="20" placeholder="Emergency contact 1" class="spacer ml">
+                        <input type="text" id="emer2" name="emer2" size="20" placeholder="Emergency contact 2" class="spacer ml mb">
+                        <input type="text" id="emer3" name="emer3" size="20" placeholder="Emergency contact 3" class="spacer mb">
+                        <input type="text" id="emer4" name="emer4" size="20" placeholder="Emergency contact 4" class="spacer mb">
+                    </div>
+                </div><br>
+                <div class="med">
+                    <div class="ml"><strong>Enter your medical details</strong></div>
+                    <select id="bgrp" name="bgrp" class="spacer ml">
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+                    <input type="text" id="insp" name="insp" size="30" placeholder="Health insurance provider" class="spacer">
+                    <input type="text" id="polnum" name="polnum" size="30" placeholder="policy#" class="spacer">
+                    <textarea id="medh" name="medh" rows="3" cols="75" placeholder="Important medical conditions / allergies" class="spacer ml"></textarea><br><br>
+                </div><br>
+                <div class="vehicle">
+                    <div class="ml"><strong>Enter your vehicle details</strong></div>
+                    <div class="vhcle1">
+                        <select id = "vhcletype1" name="vhcletype1" class="spacer ml">
+                            <option value="2w">Two Wheeler</option>
+                            <option value="4w">Four Wheeler</option>
+                        </select>
+                        <input type="text" id="MKMDL1" name="MKMDL1" required size="10" placeholder="Make & Model" class="spacer">    
+                        <input type="text" id="color1" name="color1" required size="10" placeholder="Color" class="spacer">
+                        <input type="text" id="plate1" name="plate1" required size="10" placeholder="Registration#" class="spacer">
+                        <select id = "purpose1" name="purpose1" class="spacer">
+                            <option value="personal1">Personal</option>
+                            <option value="commercial1">Commercial</option>
+                        </select>    
+                    </div>
+                    <div class="vhcle2">
+                        <select id = "vhcletype2" name="vhcletype2" class="spacer ml">
+                            <option value="2w">Two Wheeler</option>
+                            <option value="4w">Four Wheeler</option>
+                        </select>
+                        <input type="text" id="MKMDL2" name="MKMDL2" required size="10" placeholder="Make & Model" class="spacer">    
+                        <input type="text" id="color2" name="color2" required size="10" placeholder="Color" class="spacer">
+                        <input type="text" id="plate2" name="plate2" required size="10" placeholder="Registration#" class="spacer">
+                        <select id = "purpose2" name="purpose2" class="spacer">
+                            <option value="personal">Personal</option>
+                            <option value="commercial">Commercial</option>
+                        </select>    
+                    </div>
+                </div><br>
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn" class="spacer" disabled>Generate QR Code</button>
+            </div>
+
+            <div class="qr-code">
+                <form action="/download-qr" method="POST">
+                <img src="{{url_for('static', filename=img_file)}}" hidden id="qrcode" alt="your QR code image will appear here" width="200" height="200" style="display: block; margin: auto;">
+                <br>
+                <p><b>Take a print of this QR Code Image and :</b></p>
+                <ul>
+                    <li>Paste it at the back of your mobile</li>
+                    <li>Keep in your wallet / purse</li>
+                    <li>Laminate and keep in your vehicle</li>
+                    <li>Make the image as splash screen / wallpaper of your mobile</li>
+                </ul>
+                <p><b>In case of emergency, people around you can scan this QR and know your name, emergency contact, any medical condition you have etc.</b></p>    
+                <p><b>They can alert your immediate family and you will get proper medical care immediately</b></p>
+                <a href="{{url_for('static', filename=img_file)}}" download="my_image.png" class="download-btn">Download your QR Code</a>
+<!--                <button type="submit" class="submit-btn" class="spacer">Download QR</button> -->
+                </form>
+            </div>
+
+            <div class="sidebar2"></div>
+
+            <div class="footer"><h2><i>social media links - facebook, insta, telegram etc will come here once set up</i></h2></div>
+
+        </div>
+
+    </body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Personalized QR Code Generator</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" >
+        <!-- link rel="stylesheet" href="style.css" --> 
+    </head>
+    <body>
+        <div class="grid-container">
+
+            <div class="header">!!! <strong>Suraksha Sarathi </strong>- Your trusted partner to help you provide help in an emergency !!!</div>
+
+            <div class="sidebar1"></div>
+            <div class="form-contents">
+            <form action="/submit-form" method="POST">
+                <div class="personal-details">
+                    <input type="text" id="name" name="name" required size="53" placeholder="Your name"><br><br>
+                    <textarea id="address" name="address" rows="4" cols="50" placeholder="Your address"></textarea><br><br>
+                    <div class="contact-no">
+                        <input type="text" id="mobile" name="mobile" required size="21" placeholder="mobile number">
+                        <input type="text" id="landl" name="landl" size="21" placeholder="landline">
+                    </div>
+                    <br>
+                    <div class="contact-no">
+                        <input type="text" id="emer1" name="emer1" required size="21" placeholder="Emergency contact#1">
+                        <input type="text" id="emer2" name="emer2" size="21" placeholder="Emergency contact#1"><br>
+                        <input type="text" id="emer3" name="emer2" size="21" placeholder="Emergency contact#3">
+                        <input type="text" id="emer4" name="emer2" size="21" placeholder="Emergency contact#4">
+                    </div>
+                    <br><br>
+                    <select id="bgrp" name="bgrp">
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+                    <input type="text" id="insp" name="insp" size="20" placeholder="Health insurance provider">
+                    <input type="text" id="polnum" name="polnum" size="10" placeholder="policy#">
+                    <br>
+                    <textarea id="medh" name="medh" rows="4" cols="50" placeholder="Important medical conditions / allergies"></textarea><br><br>
+                </div>
+                <div class="vehicle">
+                    <div class="vhcle1">
+                        <select id = "vhcletype1" name="vhcletype1">
+                            <option value="2w">Two Wheeler</option>
+                            <option value="4w">Four Wheeler</option>
+                        </select>
+                        <input type="text" id="MKMDL1" name="MKMDL1" required size="21" placeholder="Make & Model">    
+                        <input type="text" id="color1" name="color1" required size="21" placeholder="Color">
+                        <select id = "purpose" name="purpose">
+                            <option value="personal1">Personal</option>
+                            <option value="commercial1">Commercial</option>
+                        </select>    
+                    </div>
+                    <div class="vhcle2">
+                        <select id = "vhcletype2" name="vhcletype2">
+                            <option value="2w">Two Wheeler</option>
+                            <option value="4w">Four Wheeler</option>
+                        </select>
+                        <input type="text" id="MKMDL2" name="MKMDL2" required size="21" placeholder="Make & Model">    
+                        <input type="text" id="color2" name="color2" required size="21" placeholder="Color">
+                        <select id = "purpose2" name="purpose2">
+                            <option value="personal">Personal</option>
+                            <option value="commercial">Commercial</option>
+                        </select>    
+                    </div>
+                </div>
+                <div class="btndiv">
+                    <button type="submit" class="submit-btn">Generate QR Code</button>
+                </div>
+            </form>
+            </div>
+            
+            <div class="sidebar2"></div>
+
+            <div class="footer">footer text</div>
+
+        </div>
+
+    </body>
+</html>
