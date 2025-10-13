@@ -1,11 +1,13 @@
 import qrcode
 from PIL import Image
-from flask import Flask, render_template, request, redirect, send_file, url_for, session
+from flask import Flask, render_template, request, redirect, send_file, url_for, session, jsonify
 from jinja2 import Environment, FileSystemLoader
 import logging
 import sqlite3
-import datetime
+from datetime import datetime, timedelta
 import secrets
+import random
+from twilio.rest import Client
 
 # Data to encode
 data = {
@@ -34,6 +36,12 @@ data = {
         "date_created":"",
         "date_updated":"",
     }
+
+DB_FILE = 'suraksha_sarthi_db'
+TWILIO_SID = "AC3118fa504f26fb3180826f345db47089"
+TWILIO_TOKEN = "15e174d037ffed7c953753255fec8763"
+TWILIO_PHONE = "+12294715420"
+
 
 env = Environment(loader = FileSystemLoader('templates'))
 logging.basicConfig(level=logging.DEBUG)
@@ -66,15 +74,20 @@ def gallery():
 
 @app.route("/member")
 def member():
-    return render_template("member_login.html")
+    return render_template("request_otp.html")
 
 @app.route("/partner")
 def partner():
     return render_template("partner_login.html")
 
-@app.route("/register_user", methods=['POST'])
-def register_user():
+@app.route("/manage_otp", methods=['POST'])
+def manage_otp():
     if request.method == 'POST':
+        return render_template("request_otp.html")
+
+@app.route("/register_user", methods=['GET'])
+def register_user():
+    if request.method == 'GET':
         customer = {"name": "John Doe",
                     "email": "john@example.com",
                     "phone": "+1 555 123 4567",
@@ -83,8 +96,8 @@ def register_user():
                                 ],
                     "notes": "Premium customer. Prefers email communication."
                     }
-        return render_template('user_details.html', customer=customer)
-
+        return render_template("customer_tabs.html", customer=customer)
+    
 @app.route("/plogin", methods=['POST'])
 def plogin():
     if request.method == 'POST':
@@ -201,7 +214,7 @@ def save_customer_details():
     print(insert_statement)
 
     try:
-        with sqlite3.connect('suraksha_sarthi_db') as conn:
+        with sqlite3.connect(DB_FILE) as conn:
         # create a cursor
             cursor = conn.cursor()
         # execute statements
@@ -213,7 +226,67 @@ def save_customer_details():
         print("QR Details inserted successfully.")
     except sqlite3.OperationalError as e:
         print("Failed to create tables:", e)
-     
+
+def init_db():
+    with sqlite3.connect(DB_FILE) as conn:
+        conn.execute("""
+        CREATE TABLE IF NOT EXISTS otps (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            phone TEXT NOT NULL,
+            otp TEXT NOT NULL,
+            expires_at DATETIME NOT NULL
+        )
+        """)
+        conn.commit()
+
+init_db()
+
+# --- OTP Generator ---
+def generate_otp():
+    return str(random.randint(100000, 999999))
+
+# --- Request OTP ---
+@app.route("/request_otp", methods=["POST"])
+def request_otp():
+    phone = request.form.get("mnumber")
+    if not phone:
+        return f"error: phone required"
+
+    with sqlite3.connect(DB_FILE) as conn:
+        # 1. Delete expired OTPs before creating a new one
+        conn.execute("DELETE FROM otps WHERE expires_at < ?", (datetime.utcnow(),))
+        
+        # 2. Generate OTP
+        otp = generate_otp()
+        expires_at = datetime.utcnow() + timedelta(minutes=5)
+        conn.execute("INSERT INTO otps (phone, otp, expires_at) VALUES (?, ?, ?)",
+                     (phone, otp, expires_at))
+        conn.commit()
+
+    # In production, send OTP via SMS API (Twilio, MSG91, etc.)
+    return render_template("verify_otp.html", mnumber=phone, otp = otp)
+    
+# --- Verify OTP ---
+@app.route("/send_otp", methods=["POST"])
+def send_otp():
+    data = request.get_json()
+    phone = data.get("phone")
+    otp = data.get("otp")
+
+    if not phone or not otp:
+        return jsonify({"error": "Missing phone or otp"}), 400
+
+    client = Client(TWILIO_SID, TWILIO_TOKEN)
+    message = client.messages.create(
+        body=f"Your verification code is {otp}",
+        from_=TWILIO_PHONE,
+        to=phone
+    )
+
+    print("Sent OTP:", otp, "to", phone)
+    return jsonify({"message": "OTP sent successfully"})
+
+
 if __name__== "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=True)
     

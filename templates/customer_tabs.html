@@ -1,3 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}
+Suraksha Sarathy
+{% endblock %}
+
+{% block content %}
 <div class="tabs-container">
   <div role="tablist" aria-label="Customer info tabs" class="tabs" id="tabs">
     <button class="tab" role="tab" aria-selected="true"
@@ -15,74 +22,85 @@
   </div>
 
   <div class="tab-content tab-panel">
-    <section id="panel-owner" role="tabpanel"
-             aria-labelledby="tab-owner" class="active">
-      <h3>Vehicle & Owner Info</h3>
-      <p><strong>Name:</strong> {{ customer.name }}</p>
-      <p><strong>Email:</strong> {{ customer.email }}</p>
-      <p><strong>Phone:</strong> {{ customer.phone }}</p>
+    <form action="/submit-form" method="POST">
+    <section id="panel-owner" role="tabpanel" aria-labelledby="tab-owner" class="active">
+      <h3>Vehicle & Owner Information</h3>
+      <div class="form-row">
+        <label for "cust_name">Name</label>
+        <input type="text" id="cust_name" name="cust_name" required size="20" >
+        <label for "cust_mobile">Mobile Number</label>
+        <input type="text" id="cust_mobile" name="cust_mobile" required size="10" >
+      </div>
+      <div class="form-row">
+        <label for "cust_address">Address</label>
+        <textarea id="cust_address" name="cust_address" required rows="3" cols="59"></textarea>
+      </div>
+      <br><hr><br>
+      <div class="form-row">
+        <label for "plate">Vehicle Registration Number</label>
+        <input type="text" id="plate" name="plate" required size="10" class="spacer">
+        <label for "vhp">Vehicle Insurance Provider</label>
+        <input type="text" id="vhp" name="vhp" required size="10" class="spacer">
+        <label for "vhipn">Insurance Policy Number</label>
+        <input type="text" id="vhipn" name="vhipn" required size="10" class="spacer">
+        <label for "from_dt">Insurance Start Date</label>
+        <input type="date" id="from_dt" name="from_dt" required size="10" class="spacer">
+        <label for "to_dt">Insurance End Date</label>
+        <input type="date" id="to_dt" name="to_dt" required size="10" class="spacer">
+      </div>
     </section>
 
     <section id="panel-medical" role="tabpanel"
              aria-labelledby="tab-medical" hidden>
       <h3>Medical Info</h3>
-
-      {% for vehicle in customer.vehicles %}
-        <p><strong>Make/Model:</strong> {{ vehicle.make }} {{ vehicle.model }}</p>
-        <p><strong>Registration:</strong> {{ vehicle.reg }}</p>
-        <p><strong>Year:</strong> {{ vehicle.year }}</p>
-        <hr>
-      {% else %}
-        <p>No vehicle info available.</p>
-      {% endfor %}
+      <div class="form-row">
+        <label for "bgrp">Blood Group</label>
+        <select id="bgrp" name="bgrp" class="spacer ml">
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+        </select>
+        <label for "fam_doctor">Family Doctor: </label>
+        <input type="text" id="fam_doctor" name="fam_doctor" required size="20" >
+        <label for "doctor_number">Family Doctor Number:</label>
+        <input type="text" id="doctor_number" name="doctor_number" required size="10" >
+      </div>
+      <div class="form-row">
+        <label for "med_history">Medical Conditions / Habits:</label>
+        <textarea id="med_history" name="med_history" required rows="3" cols="73" placeholder="Allergy, Current Medicine in Use, Sugar, BP, Thyroid, Smoking, Drinking."></textarea>
+      </div>
+      <br><hr><br>
+      <div class="form-row">
+        <label for "hip">Health Insurance Provider</label>
+        <input type="text" id="hip" name="hip" required size="10" class="spacer">
+        <label for "hipn">Insurance Policy Number</label>
+        <input type="text" id="hipn" name="hipn" required size="10" class="spacer">
+        <label for "h_from_dt">Insurance Start Date</label>
+        <input type="date" id="h_from_dt" name="h_from_dt" required size="10" class="spacer">
+        <label for "h_to_dt">Insurance End Date</label>
+        <input type="date" id="h_to_dt" name="h_to_dt" required size="10" class="spacer">
+      </div>
     </section>
 
     <section id="panel-driver" role="tabpanel"
              aria-labelledby="tab-other" hidden>
       <h3>Driver Info</h3>
-      <p>{{ customer.notes or "No additional notes." }}</p>
+      <p>Content to be added</p>
     </section>
 
     <section id="panel-document" role="tabpanel"
              aria-labelledby="tab-other" hidden>
       <h3>Document Locker</h3>
-      <p>{{ customer.notes or "No additional notes." }}</p>
+      <p>Content to be added</p>
     </section>
 
   </div>
 </div>
+<script src="{{ url_for('static', filename='js/manage_tabs.js') }}"></script>
 
-<script>
-  // same tab-switching JS
-  (function(){
-    const tabsEl = document.getElementById('tabs');
-    if (!tabsEl) return;
-    const tabs = Array.from(tabsEl.querySelectorAll('[role="tab"]'));
-    const panels = tabs.map(t => document.getElementById(t.getAttribute('aria-controls')));
-
-    function activateTab(newTab){
-      tabs.forEach(t => { t.setAttribute('aria-selected','false'); t.setAttribute('tabindex','-1'); });
-      panels.forEach(p => { p.hidden = true; p.classList.remove('active'); });
-
-      newTab.setAttribute('aria-selected','true');
-      newTab.setAttribute('tabindex','0');
-      const panel = document.getElementById(newTab.getAttribute('aria-controls'));
-      panel.hidden = false;
-      panel.classList.add('active');
-      newTab.focus();
-    }
-
-    tabs.forEach(t => t.addEventListener('click', () => activateTab(t)));
-    tabs.forEach((t, idx) => {
-      t.addEventListener('keydown', (e) => {
-        const key = e.key;
-        let newIndex = null;
-        if (key === 'ArrowRight' || key === 'ArrowDown') newIndex = (idx + 1) % tabs.length;
-        else if (key === 'ArrowLeft' || key === 'ArrowUp') newIndex = (idx - 1 + tabs.length) % tabs.length;
-        else if (key === 'Home') newIndex = 0;
-        else if (key === 'End') newIndex = tabs.length - 1;
-        if (newIndex !== null){ e.preventDefault(); activateTab(tabs[newIndex]); }
-      });
-    });
-  })();
-</script>
+{% endblock %}

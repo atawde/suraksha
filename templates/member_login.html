@@ -3,10 +3,15 @@
 {% block title %}Login - My Website{% endblock %}
 
 {% block content %}
-<h1>Login</h1>
+<h1>SIgn Up</h1>
 <form method="POST" action="{{ url_for('mlogin') }}">
+    <label for "username">Name</label>
     <input type="text" name="username" placeholder="Enter username"><br>
-    <input type="password" name="password" placeholder="Enter password"><br>
-    <button type="submit">Login</button>
+    <label for "mnumber">Mobile Number *</label>
+    <input type="text" name="mnumber"><br>
+    <label for "email">Email</label>
+    <input type="text" name="email"><br>
+    <button type="submit">Sign Up</button>
+    <button type="submit">Already Registered User</button>
 </form>
 {% endblock %}

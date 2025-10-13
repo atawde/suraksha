@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Login - My Website{% endblock %}
+
+{% block content %}
+<div id="verify-section" class="contact">
+    <h4>Verify your mobile number</h4>
+    <input type="text" id="phone" placeholder="Enter 10 digit mobile number" class="minput" maxlength="10"><br><br>
+    <button id="sendOtpBtn" class="otp-buttons">Send OTP</button>
+  </div>
+
+  <!-- OTP Modal -->
+  <div id="otpModal" class="modal">
+    <div class="modal-content">
+      <h3>Enter OTP</h3>
+      <p id="otpInfo"></p>
+      <input type="text" id="otpInput" class="otp-input" maxlength="6" placeholder="------"><br>
+
+      <div class="modal-buttons">
+        <button id="verifyOtpBtn" class="otp-buttons">Verify</button>
+        <button id="resendBtn" disabled class="otp-buttons">Resend OTP</button>
+        <button id="cancelBtn" style="background-color: #dc3545;" class="otp-buttons">Cancel</button>
+      </div>
+
+      <p id="statusMsg"></p>
+    </div>
+  </div>
+
+<script src="{{ url_for('static', filename='js/manage_otp.js') }}"></script>
+
+{% endblock %}
