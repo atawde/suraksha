@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 import secrets
 import random
 from twilio.rest import Client
+from dotenv import load_dotenv
+import os
 
 # Data to encode
 data = {
@@ -37,11 +39,16 @@ data = {
         "date_updated":"",
     }
 
+load_dotenv()
 DB_FILE = 'suraksha_sarthi_db'
-TWILIO_SID = "AC3118fa504f26fb3180826f345db47089"
-TWILIO_TOKEN = "15e174d037ffed7c953753255fec8763"
-TWILIO_PHONE = "+12294715420"
+#TWILIO_SID = "AC3118fa504f26fb3180826f345db47089"
+#TWILIO_TOKEN = "15e174d037ffed7c953753255fec8763"
+#TWILIO_PHONE = "+12294715420"
+account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+twilio_phone = os.getenv("TWILIO_PHONE")
 
+print(f"SID {account_sid} token {auth_token} phone {twilio_phone}")
 
 env = Environment(loader = FileSystemLoader('templates'))
 logging.basicConfig(level=logging.DEBUG)
@@ -276,10 +283,10 @@ def send_otp():
     if not phone or not otp:
         return jsonify({"error": "Missing phone or otp"}), 400
 
-    client = Client(TWILIO_SID, TWILIO_TOKEN)
+    client = Client(account_sid, auth_token)
     message = client.messages.create(
         body=f"Your verification code is {otp}",
-        from_=TWILIO_PHONE,
+        from_=twilio_phone,
         to=phone
     )
 
