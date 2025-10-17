@@ -129,7 +129,7 @@ def register_user():
 #                                ],
 #                    "notes": "Premium customer. Prefers email communication."
 #                    }
-        return render_template("customer_tabs.html", customer=customer)
+        return render_template("customer_tabs.html", ) # customer=customer)
     
 @app.route("/plogin", methods=['POST'])
 def plogin():
