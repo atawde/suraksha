@@ -7,6 +7,7 @@
 </head>
 <body>
     <!-- Navbar -->
+    <div class="page_header">
     <nav>
         <img src="{{ url_for('static', filename='images/avsar.png') }}" width="50" height="50">
         <a href="{{ url_for('home') }}">Home</a> |
@@ -14,20 +15,22 @@
         <a href="{{ url_for('contact') }}">Contact Us</a> |
         <a href="{{ url_for('how') }}">How It Works</a> |
         <a href="{{ url_for('gallery') }}">Gallery</a> |
-        <a href="{{ url_for('partner') }}">Partner Login</a> |
-        <a href="{{ url_for('member') }}">Member Login</a>
+        <a href="{{ url_for('member') }}">Partner Login</a> |
+        <a href="{{ url_for('member') }}">Logout</a>
     </nav>
 
-    <div class="home-heading">
-        <h1>!!! Suraksha Sarathy : Your reliable partner in case of road emergency !!!</h1>
+    <div class="home_heading">
+        <strong>!!! Suraksha Sarathy : Your reliable partner in case of road emergency !!!</strong>
+    </div>
     </div>
 
     <!-- Page content -->
-    <div>
+    <div class="page_body">
         {% block content %}{% endblock %}
     </div>
 
-    <!-- Footer -->
+<!--
+    Footer
     <div class="footer">
         <hr>
         <div class="ftr">
@@ -41,5 +44,6 @@
             </div>
         </div>
     </div>
+-->
 </body>
 </html>

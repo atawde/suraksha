@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}
+Suraksha Sarathy
+{% endblock %}
+
+{% block content %}
+<div class="tabs-container">
+  <div role="tablist" aria-label="Customer info tabs" class="tabs" id="tabs">
+    <button class="tab" role="tab" aria-selected="true"
+            aria-controls="panel-owner" id="tab-owner"
+            tabindex="0">Vehicle & Owner Info</button>
+    <button class="tab" role="tab" aria-selected="false"
+            aria-controls="panel-medical" id="tab-medical"
+            tabindex="-1">Medical Info</button>
+    <button class="tab" role="tab" aria-selected="false"
+            aria-controls="panel-driver" id="tab-driver"
+            tabindex="-1">Driver Info</button>
+    <button class="tab" role="tab" aria-selected="false"
+            aria-controls="panel-document" id="tab-document"
+            tabindex="-1">Document Locker</button>
+  </div>
+
+  <div class="tab-content tab-panel">
+    <form action="/submit-form" method="POST">
+    <section id="panel-owner" role="tabpanel" aria-labelledby="tab-owner" class="active">
+      <h3>Vehicle & Owner Information</h3>
+      <div class="form-row">
+        <label for "cust_name">Name</label>
+        <input type="text" id="cust_name" name="cust_name" required size="20" >
+        <label for "cust_mobile">Mobile Number</label>
+        <input type="text" id="cust_mobile" name="cust_mobile" required size="10" >
+      </div>
+      <div class="form-row">
+        <label for "cust_address">Address</label>
+        <textarea id="address_ln1" name="address_ln1" required rows="1" cols="59" placeholder="house name, number, street address"></textarea>
+        <textarea id="address_ln2" name="address_ln1" required rows="1" cols="59" placeholder="nearest landmark"></textarea>
+        <input type="text" id="city" name="city" required size="20" placeholder="city/village , district" >
+        <input type="text" id="pin" name="pin" required size="5" placeholder="pincode" >
+        
+      </div>
+      <div class="form-row">
+        <strong>Emergency Contact Numbers</strong>
+        <table border="1">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Relation</th>
+              <th>Contact Number</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="text" id="e1_name" name="e1_name" required size="20" ></td>
+              <td><input type="text" id="e1_relation" name="e1_relation" required size="10" ></td>
+              <td><input type="text" id="e1_number" name="e1_number" required size="10" ></td>
+            </tr>
+            <tr>
+              <td><input type="text" id="e2_name" name="e2_name" required size="20" ></td>
+              <td><input type="text" id="e2_relation" name="e2_relation" required size="10" ></td>
+              <td><input type="text" id="e2_number" name="e2_number" required size="10" ></td>
+            </tr>
+            <tr>
+              <td><input type="text" id="e3_name" name="e3_name" required size="20" ></td>
+              <td><input type="text" id="e3_relation" name="e3_relation" required size="10" ></td>
+              <td><input type="text" id="e3_number" name="e3_number" required size="10" ></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <br><hr><br>
+      <div class="form-row">
+        <label for "plate">Vehicle Registration Number</label>
+        <input type="text" id="plate" name="plate" required size="10" class="spacer">
+        <label for "vhp">Vehicle Insurance Provider</label>
+        <input type="text" id="vhp" name="vhp" required size="10" class="spacer">
+        <label for "vhipn">Insurance Policy Number</label>
+        <input type="text" id="vhipn" name="vhipn" required size="10" class="spacer">
+        <label for "from_dt">Insurance Start Date</label>
+        <input type="date" id="from_dt" name="from_dt" required size="10" class="spacer">
+        <label for "to_dt">Insurance End Date</label>
+        <input type="date" id="to_dt" name="to_dt" required size="10" class="spacer">
+      </div>
+    </section>
+
+    <section id="panel-medical" role="tabpanel"
+             aria-labelledby="tab-medical" hidden>
+      <h3>Medical Info</h3>
+      <div class="form-row">
+        <label for "bgrp">Blood Group</label>
+        <select id="bgrp" name="bgrp" class="spacer ml">
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+        </select>
+        <label for "fam_doctor">Family Doctor: </label>
+        <input type="text" id="fam_doctor" name="fam_doctor" required size="20" >
+        <label for "doctor_number">Family Doctor Number:</label>
+        <input type="text" id="doctor_number" name="doctor_number" required size="10" >
+      </div>
+      <div class="form-row">
+        <label for "med_history">Medical Conditions / Habits:</label>
+        <textarea id="med_history" name="med_history" required rows="3" cols="73" placeholder="Allergy, Current Medicine in Use, Sugar, BP, Thyroid, Smoking, Drinking."></textarea>
+      </div>
+      <br><hr><br>
+      <div class="form-row">
+        <label for "hip">Health Insurance Provider</label>
+        <input type="text" id="hip" name="hip" required size="10" class="spacer">
+        <label for "hipn">Insurance Policy Number</label>
+        <input type="text" id="hipn" name="hipn" required size="10" class="spacer">
+        <label for "h_from_dt">Insurance Start Date</label>
+        <input type="date" id="h_from_dt" name="h_from_dt" required size="10" class="spacer">
+        <label for "h_to_dt">Insurance End Date</label>
+        <input type="date" id="h_to_dt" name="h_to_dt" required size="10" class="spacer">
+      </div>
+    </section>
+
+    <section id="panel-driver" role="tabpanel"
+             aria-labelledby="tab-other" hidden>
+      <h3>Driver Info</h3>
+      <p>Content to be added</p>
+    </section>
+
+    <section id="panel-document" role="tabpanel"
+             aria-labelledby="tab-other" hidden>
+      <h3>Document Locker</h3>
+      <p>Content to be added</p>
+    </section>
+
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/manage_tabs.js') }}"></script>
+
+{% endblock %}

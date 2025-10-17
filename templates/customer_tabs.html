@@ -5,55 +5,92 @@ Suraksha Sarathy
 {% endblock %}
 
 {% block content %}
-<div class="tabs-container">
-  <div role="tablist" aria-label="Customer info tabs" class="tabs" id="tabs">
-    <button class="tab" role="tab" aria-selected="true"
-            aria-controls="panel-owner" id="tab-owner"
-            tabindex="0">Vehicle & Owner Info</button>
-    <button class="tab" role="tab" aria-selected="false"
-            aria-controls="panel-medical" id="tab-medical"
-            tabindex="-1">Medical Info</button>
-    <button class="tab" role="tab" aria-selected="false"
-            aria-controls="panel-driver" id="tab-driver"
-            tabindex="-1">Driver Info</button>
-    <button class="tab" role="tab" aria-selected="false"
-            aria-controls="panel-document" id="tab-document"
-            tabindex="-1">Document Locker</button>
+<form action="/submit-form" method="POST" enctype="multipart/form-data" id="mainForm">
+  <div class="form-container">
+  <div class="form-section" style="margin-top: 8px;">
+    <strong>Personal Details</strong>
+    <div class="form-row">
+      <div>
+        <label for "cust_name">Name *</label>
+        <input type="text" id="cust_name" name="cust_name" required size="40" >
+        <label for "cust_mobile">Mobile Number *</label>
+        <input type="text" id="cust_mobile" name="cust_mobile" required size="20" >
+      </div>
+      <div style="margin-top: 8px;">
+        <label for "house">House/Flat No.</label>
+        <input type="text" name="house" id="house" size="6" placeholder="house/flat number">
+        <label for "building">Building</label>
+        <input type="text" name="building" id="building" size="6" placeholder="building">
+        <label for "address1">Address Line 1 *</label>
+        <input type="text" name="address1" id="address1" size="25">
+      </div>
+      <div style="margin-top: 8px;">
+        <label for "address2">Address Line 2</label>
+        <input type="text" name="address2" id="address2" size="15">
+        <label for "city">District/City *</label>
+        <input type="text" name="city" id="city" size="3">
+        <label for "state">State</label>
+        <input type="text" name="state" id="state" size="3">
+        <label for "pin">Pin Code *</label>
+        <input type="text" name="pin" id="pin" size="3">
+      </div>
+    </div>
+    <div>
+      <br>
+      <strong>Emergency Alert Details</strong>
+      <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Relation</th>
+          <th>Contact Number</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="text" id="e1_name" name="e1_name" required size="40" ></td>
+          <td><input type="text" id="e1_relation" name="e1_relation" required size="20" ></td>
+          <td><input type="text" id="e1_number" name="e1_number" required size="20" ></td>
+        </tr>
+        <tr>
+          <td><input type="text" id="e2_name" name="e2_name" size="40" ></td>
+          <td><input type="text" id="e2_relation" name="e2_relation" size="20" ></td>
+          <td><input type="text" id="e2_number" name="e2_number" size="20" ></td>
+        </tr>
+        <tr>
+          <td><input type="text" id="e3_name" name="e3_name" size="40" ></td>
+          <td><input type="text" id="e3_relation" name="e3_relation" size="20" ></td>
+          <td><input type="text" id="e3_number" name="e3_number" size="20" ></td>
+        </tr>
+      </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <div class="form-section">
+    <strong>Vehicle Details</strong>
+    <div class="form-row">
+    <div>
+      <label for "plate">Registration Number</label>
+      <input type="text" id="plate" name="plate" required size="10">
+      <label for "vhp">Insurance Provider</label>
+      <input type="text" id="vhp" name="vhp" required size="20">
+    </div>
+    <div style="margin-top: 8px;">
+      <label for "vhipn">Insurance Policy Number</label>
+      <input type="text" id="vhipn" name="vhipn" size="8">
+      <label for "from_dt">Start Date</label>
+      <input type="date" id="from_dt" name="from_dt" size="6">
+      <label for "to_dt">End Date</label>
+      <input type="date" id="to_dt" name="to_dt" size="6">
+    </div>
+    </div>
   </div>
 
-  <div class="tab-content tab-panel">
-    <form action="/submit-form" method="POST">
-    <section id="panel-owner" role="tabpanel" aria-labelledby="tab-owner" class="active">
-      <h3>Vehicle & Owner Information</h3>
-      <div class="form-row">
-        <label for "cust_name">Name</label>
-        <input type="text" id="cust_name" name="cust_name" required size="20" >
-        <label for "cust_mobile">Mobile Number</label>
-        <input type="text" id="cust_mobile" name="cust_mobile" required size="10" >
-      </div>
-      <div class="form-row">
-        <label for "cust_address">Address</label>
-        <textarea id="cust_address" name="cust_address" required rows="3" cols="59"></textarea>
-      </div>
-      <br><hr><br>
-      <div class="form-row">
-        <label for "plate">Vehicle Registration Number</label>
-        <input type="text" id="plate" name="plate" required size="10" class="spacer">
-        <label for "vhp">Vehicle Insurance Provider</label>
-        <input type="text" id="vhp" name="vhp" required size="10" class="spacer">
-        <label for "vhipn">Insurance Policy Number</label>
-        <input type="text" id="vhipn" name="vhipn" required size="10" class="spacer">
-        <label for "from_dt">Insurance Start Date</label>
-        <input type="date" id="from_dt" name="from_dt" required size="10" class="spacer">
-        <label for "to_dt">Insurance End Date</label>
-        <input type="date" id="to_dt" name="to_dt" required size="10" class="spacer">
-      </div>
-    </section>
-
-    <section id="panel-medical" role="tabpanel"
-             aria-labelledby="tab-medical" hidden>
-      <h3>Medical Info</h3>
-      <div class="form-row">
+  <div class="form-section">
+    <strong>Owner Medical Info</strong>
+    <div class="form-row">
+      <div>
         <label for "bgrp">Blood Group</label>
         <select id="bgrp" name="bgrp" class="spacer ml">
                         <option value="A+">A+</option>
@@ -70,37 +107,147 @@ Suraksha Sarathy
         <label for "doctor_number">Family Doctor Number:</label>
         <input type="text" id="doctor_number" name="doctor_number" required size="10" >
       </div>
-      <div class="form-row">
+      <div style="margin-top: 8px; align-content: center;">
         <label for "med_history">Medical Conditions / Habits:</label>
         <textarea id="med_history" name="med_history" required rows="3" cols="73" placeholder="Allergy, Current Medicine in Use, Sugar, BP, Thyroid, Smoking, Drinking."></textarea>
       </div>
-      <br><hr><br>
-      <div class="form-row">
+    </div>
+    <div class="form-row">
+      <div>
         <label for "hip">Health Insurance Provider</label>
-        <input type="text" id="hip" name="hip" required size="10" class="spacer">
+        <input type="text" id="hip" name="hip" size="10">
         <label for "hipn">Insurance Policy Number</label>
-        <input type="text" id="hipn" name="hipn" required size="10" class="spacer">
-        <label for "h_from_dt">Insurance Start Date</label>
-        <input type="date" id="h_from_dt" name="h_from_dt" required size="10" class="spacer">
-        <label for "h_to_dt">Insurance End Date</label>
-        <input type="date" id="h_to_dt" name="h_to_dt" required size="10" class="spacer">
+        <input type="text" id="hipn" name="hipn" size="10">
       </div>
-    </section>
-
-    <section id="panel-driver" role="tabpanel"
-             aria-labelledby="tab-other" hidden>
-      <h3>Driver Info</h3>
-      <p>Content to be added</p>
-    </section>
-
-    <section id="panel-document" role="tabpanel"
-             aria-labelledby="tab-other" hidden>
-      <h3>Document Locker</h3>
-      <p>Content to be added</p>
-    </section>
-
+      <div style="margin-top: 8px;">
+        <label for "h_from_dt">Insurance Start Date</label>
+        <input type="date" id="h_from_dt" name="h_from_dt" size="10">
+        <label for "h_to_dt">Insurance End Date</label>
+        <input type="date" id="h_to_dt" name="h_to_dt" size="10">
+      </div>
+    </div>
   </div>
-</div>
+
+  <div class="form-section">
+    <strong>Driver Info</strong>
+    <div class="form-row">
+      <div>
+        <label for "driver_name">Name</label>
+        <input type="text" id="driver_name" name="driver_name" size="45" >
+        <label for "driver_mobile">Mobile Number</label>
+        <input type="text" id="driver_mobile" name="driver_mobile" size="25" >
+      </div>
+      <br>
+      <strong>Driver Emergency Alert Details</strong>
+      <div>
+        <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Relation</th>
+            <th>Contact Number</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="text" id="d_e1_name" name="d_e1_name" size="40" ></td>
+            <td><input type="text" id="d_e1_relation" name="d_e1_relation" size="20" ></td>
+            <td><input type="text" id="d_e1_number" name="d_e1_number" size="20" ></td>
+          </tr>
+          <tr>
+            <td><input type="text" id="d_e2_name" name="d_e2_name" size="40" ></td>
+            <td><input type="text" id="d_e2_relation" name="d_e2_relation" size="20" ></td>
+            <td><input type="text" id="d_e2_number" name="d_e2_number" size="20" ></td>
+          </tr>
+          <tr>
+            <td><input type="text" id="d_e3_name" name="d_e3_name" size="40" ></td>
+            <td><input type="text" id="d_e3_relation" name="d_e3_relation" size="20" ></td>
+            <td><input type="text" id="d_e3_number" name="d_e3_number" size="20" ></td>
+          </tr>
+        </tbody>
+        </table>
+      </div>
+      <div style="margin-top: 8px;">
+        <label for "d_bgrp">Blood Group</label>
+        <select id="d_bgrp" name="d_bgrp" class="spacer ml">
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+        </select>
+        <label for "d_fam_doctor">Family Doctor: </label>
+        <input type="text" id="d_fam_doctor" name="d_fam_doctor" size="20" >
+        <label for "d_doctor_number">Family Doctor Number:</label>
+        <input type="text" id="d_doctor_number" name="d_doctor_number" size="9" >
+      </div>
+      <div  style="margin-top: 8px;">
+        <label for "d_med_history">Medical Conditions / Habits:</label>
+        <textarea id="d_med_history" name="d_med_history" rows="3" cols="77" placeholder="Allergy, Current Medicine in Use, Sugar, BP, Thyroid, Smoking, Drinking."></textarea>
+      </div>
+      <div>
+        <label for "d_hip">Life Insurance Provider</label>
+        <input type="text" id="d_hip" name="d_hip" size="20" >
+        <label for "d_hipn">Insurance Policy Number</label>
+        <input type="text" id="d_hipn" name="d_hipn" size="20" >
+      </div>
+      <div style="margin-top: 8px;">
+        <label for "d_h_from_dt">Insurance Start Date</label>
+        <input type="date" id="d_h_from_dt" name="d_h_from_dt" size="15" >
+        <label for "d_h_to_dt">Insurance End Date</label>
+        <input type="date" id="d_h_to_dt" name="d_h_to_dt" size="15" >
+      </div>
+    </div>
+  </div>
+
+  <!-- put this in another form/action route
+  <div class="form-section">
+    <strong>Document Locker</strong>
+    VEHICLE DOCUMENTS
+    <fieldset class="doc-group">
+      <legend>Vehicle Documents</legend>
+      <label><input type="radio" name="vehicle_doc" value="rc"> Registration Certificate</label>
+      <label><input type="radio" name="vehicle_doc" value="v_ins"> Vehicle Insurance</label>
+      <label><input type="radio" name="vehicle_doc" value="puc"> PUC</label>
+      <label><input type="radio" name="vehicle_doc" value="fc"> Fitness Certificate</label>
+      <label><input type="radio" name="vehicle_doc" value="pr"> Permit</label>
+
+      <div id="vehicle-upload" class="upload-field hidden">
+        <label for="vehicle-file">Upload Selected Vehicle Document:</label>
+        <input type="file" id="vehicle-file" name="vehicle-file" accept=".pdf,.jpg,.png">
+        <button id="upload-vehicle-btn" disabled>Upload</button>
+        <p id="vehicle-status" class="upload-status"></p>
+      </div>
+    </fieldset>
+
+     PERSONAL DOCUMENTS
+
+    <fieldset class="doc-group">
+      <legend>Personal Documents</legend>
+      <label><input type="radio" name="personal_doc" value="dl"> Driving License</label>
+      <label><input type="radio" name="personal_doc" value="adr"> Aadhar</label>
+      <label><input type="radio" name="personal_doc" value="pan"> PAN</label>
+      <label><input type="radio" name="personal_doc" value="m_ins"> Medical Insurance</label>
+      <label><input type="radio" name="personal_doc" value="prsc"> Current Prescription</label>
+
+      <div id="personal-upload" class="upload-field hidden">
+        <label for="personal-file">Upload Selected Personal Document:</label>
+        <input type="file" id="personal-file" name="personal-file" accept=".pdf,.jpg,.png">
+        <button id="upload-personal-btn" disabled>Upload</button>
+        <p id="personal-status" class="upload-status"></p>
+      </div>
+    </fieldset>
+  </div>
+-->
+
+  <div class="form-actions">
+    <button type="submit" class="form-submit-btn" id="submitBtn">Submit Form</button>
+  </div>
+
+</form>
 <script src="{{ url_for('static', filename='js/manage_tabs.js') }}"></script>
 
 {% endblock %}

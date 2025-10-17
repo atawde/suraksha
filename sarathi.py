@@ -4,7 +4,8 @@ from flask import Flask, render_template, request, redirect, send_file, url_for,
 from jinja2 import Environment, FileSystemLoader
 import logging
 import sqlite3
-from datetime import datetime, timedelta
+from datetime import timedelta
+import datetime
 import secrets
 import random
 from twilio.rest import Client
@@ -13,37 +14,62 @@ import os
 
 # Data to encode
 data = {
-        "name":"",
-        "address":"",
-        "mobile": "",
-        "land_line": "",
-        "emergency_contact_1":"",
-        "emergency_contact_2":"",
-        "emergency_contact_3":"",
-        "emergency_contact_4":"",
-        "blood_group":"",  
-        "med_history": "",
-        "insurance_provider": "",
-        "policy_number": "",
-        "vh1_type":"",
-        "vh1_make":"",
-        "vh1_color":"",
-        "vh1_plate":"",
-        "vh1_usage":"",
-        "vh2_type":"",
-        "vh2_make":"",
-        "vh2_color":"",
-        "vh2_plate":"",
-        "vh2_usage":"",
+        "cust_name":"",
+        "cust_mobile":"",
+        "house": "",
+        "building": "",
+        "address1":"",
+        "address2":"",
+        "city":"",
+        "state":"",
+        "pin":"",  
+        "e1_name": "",
+        "e1_relation": "",
+        "e1_number": "",
+        "e2_name": "",
+        "e2_relation": "",
+        "e2_number": "",
+        "e3_name": "",
+        "e3_relation": "",
+        "e3_number": "",
+        "plate":"",
+        "vhp":"",
+        "vhipn":"",
+        "from_dt":"",
+        "to_dt":"",
+        "bgrp":"",
+        "fam_doctor":"",
+        "doctor_number":"",
+        "med_history":"",
+        "hip":"",
+        "hipn":"",
+        "h_from_dt":"",
+        "h_to_dt":"",
+        "driver_name":"",
+        "driver_mobile":"",
+        "d_e1_name":"",
+        "d_e1_relation":"",
+        "d_e1_number":"",
+        "d_e2_name":"",
+        "d_e2_relation":"",
+        "d_e2_number":"",
+        "d_e3_name":"",
+        "d_e3_relation":"",
+        "d_e3_number":"",
+        "d_bgrp":"",
+        "d_fam_doctor":"",
+        "d_doctor_number":"",
+        "d_med_history":"",
+        "d_hip":"",
+        "d_hipn":"",
+        "d_h_from_dt":"",
+        "d_h_to_dt":"",
         "date_created":"",
         "date_updated":"",
     }
 
 load_dotenv()
 DB_FILE = 'suraksha_sarthi_db'
-#TWILIO_SID = "AC3118fa504f26fb3180826f345db47089"
-#TWILIO_TOKEN = "15e174d037ffed7c953753255fec8763"
-#TWILIO_PHONE = "+12294715420"
 account_sid = os.getenv("TWILIO_ACCOUNT_SID")
 auth_token = os.getenv("TWILIO_AUTH_TOKEN")
 twilio_phone = os.getenv("TWILIO_PHONE")
@@ -95,14 +121,14 @@ def manage_otp():
 @app.route("/register_user", methods=['GET'])
 def register_user():
     if request.method == 'GET':
-        customer = {"name": "John Doe",
-                    "email": "john@example.com",
-                    "phone": "+1 555 123 4567",
-                    "vehicles": [{"make": "Toyota", "model": "Corolla", "reg": "ABC-1234", "year": 2019},
-                                 {"make": "Honda", "model": "Civic", "reg": "XYZ-9876", "year": 2020}
-                                ],
-                    "notes": "Premium customer. Prefers email communication."
-                    }
+#        customer = {"name": "John Doe",
+#                    "email": "john@example.com",
+#                    "phone": "+1 555 123 4567",
+#                    "vehicles": [{"make": "Toyota", "model": "Corolla", "reg": "ABC-1234", "year": 2019},
+#                                 {"make": "Honda", "model": "Civic", "reg": "XYZ-9876", "year": 2020}
+#                                ],
+#                    "notes": "Premium customer. Prefers email communication."
+#                    }
         return render_template("customer_tabs.html", customer=customer)
     
 @app.route("/plogin", methods=['POST'])
@@ -120,34 +146,62 @@ def mlogin():
 #    return render_template('qr_details.html', img_file="placeholder.png")
 
 @app.route("/submit-form", methods=['POST'])
-def generate_qr():
-        if request.method == 'POST':
-            data["name"] = request.form.get('name')
-            data["address"] = request.form.get('address')
-            data["mobile"] = request.form.get('mobile')
-            data["land_line"] = request.form.get('landl')
-            data["emergency_contact_1"] = request.form.get('emer1')
-            data["emergency_contact_2"] = request.form.get('emer2')
-            data["emergency_contact_3"] = request.form.get('emer3')
-            data["emergency_contact_4"] = request.form.get('emer4')
-            data["blood_group"] = request.form.get('bgrp')
-            data["med_history"] = request.form.get('medh')
-            data["insurance_provider"] = request.form.get('insp')
-            data["policy_number"] = request.form.get('polnum')
-            data["vh1_type"] = request.form.get('vhcletype1')
-            data["vh1_make"] = request.form.get('MKMDL1')
-            data["vh1_color"] = request.form.get('color1')
-            data["vh1_plate"] = request.form.get('plate1')
-            data["vh1_usage"] = request.form.get('purpose1')
-            data["vh2_type"] = request.form.get('vhcletype2')
-            data["vh2_make"] = request.form.get('MKMDL2')
-            data["vh2_color"] = request.form.get('color2')
-            data["vh2_plate"] = request.form.get('plate2')
-            data["vh2_usage"] = request.form.get('purpose2')
+def register_customer():
+    if request.method == 'POST':
+        data["cust_name"] = request.form.get('cust_name')
+        data["cust_mobile"] = request.form.get('cust_mobile')
+        data["house"] = request.form.get('house')
+        data["building"] = request.form.get('building')
+        data["address1"] = request.form.get('address1')
+        data["address2"] = request.form.get('address2')
+        data["city"] = request.form.get('city')
+        data["state"] = request.form.get('state')
+        data["pin"] = request.form.get('pin')
+        data["e1_name"] = request.form.get('e1_name')
+        data["e1_relation"] = request.form.get('e1_relation')
+        data["e1_number"] = request.form.get('e1_number')
+        data["e2_name"] = request.form.get('e2_name')
+        data["e2_relation"] = request.form.get('e2_relation')
+        data["e2_number"] = request.form.get('e2_number')
+        data["e3_name"] = request.form.get('e3_name')
+        data["e3_relation"] = request.form.get('e3_relation')
+        data["e3_number"] = request.form.get('e3_number')
+        data["plate"] = request.form.get('plate')
+        data["vhp"] = request.form.get('vhp')
+        data["vhipn"] = request.form.get('vhipn')
+        data["from_dt"] = request.form.get('from_dt')
+        data["to_dt"] = request.form.get('to_dt')
+        data["bgrp"] = request.form.get('bgrp')
+        data["fam_doctor"] = request.form.get('fam_doctor')
+        data["doctor_number"] = request.form.get('doctor_number')
+        data["med_history"] = request.form.get('med_history')
+        data["hip"] = request.form.get('hip')
+        data["hipn"] = request.form.get('hipn')
+        data["h_from_dt"] = request.form.get('h_from_dt')
+        data["h_to_dt"] = request.form.get('h_to_dt')
+        data["driver_name"] = request.form.get('driver_name')
+        data["driver_mobile"] = request.form.get('driver_mobile')
+        data["d_e1_name"] = request.form.get('d_e1_name')
+        data["d_e1_relation"] = request.form.get('d_e1_relation')
+        data["d_e1_number"] = request.form.get('d_e1_number')
+        data["d_e2_name"] = request.form.get('d_e2_name')
+        data["d_e2_relation"] = request.form.get('d_e2_relation')
+        data["d_e2_number"] = request.form.get('d_e2_number')
+        data["d_e3_name"] = request.form.get('d_e3_name')
+        data["d_e3_relation"] = request.form.get('d_e3_relation')
+        data["d_e3_number"] = request.form.get('d_e3_number')
+        data["d_bgrp"] = request.form.get('d_bgrp')
+        data["d_fam_doctor"] = request.form.get('d_fam_doctor')
+        data["d_doctor_number"] = request.form.get('d_doctor_number')
+        data["d_med_history"] = request.form.get('d_med_history')
+        data["d_hip"] = request.form.get('d_hip')
+        data["d_hipn"] = request.form.get('d_hipn')
+        data["d_h_from_dt"] = request.form.get('d_h_from_dt')
+        data["d_h_to_dt"] = request.form.get('d_h_to_dt')
 
-            generate_qrcode()
-            save_customer_details()
-            return render_template('qr_download.html', img_file="my_qrcode.png")
+#            generate_qrcode()
+        save_customer_details()
+        return render_template('qr_download.html', img_file="my_qrcode.png")
         
 #        return render_template('qr_details.html', img_file="placeholder.png")  #for Get method display the same form
 
@@ -182,32 +236,60 @@ def generate_qrcode():
 def save_customer_details():
 
     create_table_statement = """                      
-        CREATE TABLE IF NOT EXISTS qr_code_details (    
+        CREATE TABLE IF NOT EXISTS customer_details (    
             customer_id INTEGER PRIMARY KEY,            
-            name text NOT NULL,                
-            address text,
-            mobile text,
-            land_line text,
-            emergency_contact_1 text,
-            emergency_contact_2 text,
-            emergency_contact_3 text,
-            emergency_contact_4 text,
-            blood_group text,  
+            cust_name text,
+            cust_mobile text,
+            house text,
+            building text,
+            address1 text,
+            address2 text,
+            city text,
+            state text,
+            pin text,  
+            e1_name text,
+            e1_relation text,
+            e1_number text,
+            e2_name text,
+            e2_relation text,
+            e2_number text,
+            e3_name text,
+            e3_relation text,
+            e3_number text,
+            plate text,
+            vhp text,
+            vhipn text,
+            from_dt text,
+            to_dt text,
+            bgrp text,
+            fam_doctor text,
+            doctor_number text,
             med_history text,
-            insurance_provider text,
-            policy_number text,
-            vh1_type text,
-            vh1_make text,
-            vh1_color text,
-            vh1_plate text,
-            vh1_usage text,
-            vh2_type text,
-            vh2_make text,
-            vh2_color text,
-            vh2_plate text,
-            vh2_usage text,
-            date_created DATE, 
-            date_updated DATE
+            hip text,
+            hipn text,
+            h_from_dt date,
+            h_to_dt date,
+            driver_name text,
+            driver_mobile text,
+            d_e1_name text,
+            d_e1_relation text,
+            d_e1_number text,
+            d_e2_name text,
+            d_e2_relation text,
+            d_e2_number text,
+            d_e3_name text,
+            d_e3_relation text,
+            d_e3_number text,
+            d_bgrp text,
+            d_fam_doctor text,
+            d_doctor_number text,
+            d_med_history text,
+            d_hip text,
+            d_hipn text,
+            d_h_from_dt date,
+            d_h_to_dt date,
+            date_created date,
+            date_updated date,
         );"""
 
     today = datetime.date.today().isoformat()
@@ -217,7 +299,7 @@ def save_customer_details():
     cols = ", ".join(data.keys())              
     placeholders = ", ".join([":" + k for k in data.keys()]) 
 
-    insert_statement = f"INSERT INTO qr_code_details ({cols}) VALUES ({placeholders})"
+    insert_statement = f"INSERT INTO customer_details ({cols}) VALUES ({placeholders})"
     print(insert_statement)
 
     try:
@@ -230,7 +312,7 @@ def save_customer_details():
         # commit the changes
             conn.commit()
 
-        print("QR Details inserted successfully.")
+        print("Customer Details inserted successfully.")
     except sqlite3.OperationalError as e:
         print("Failed to create tables:", e)
 
