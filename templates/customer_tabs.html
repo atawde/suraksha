@@ -202,52 +202,18 @@ Suraksha Sarathy
       </div>
     </div>
   </div>
-
-  <!-- put this in another form/action route
-  <div class="form-section">
-    <strong>Document Locker</strong>
-    VEHICLE DOCUMENTS
-    <fieldset class="doc-group">
-      <legend>Vehicle Documents</legend>
-      <label><input type="radio" name="vehicle_doc" value="rc"> Registration Certificate</label>
-      <label><input type="radio" name="vehicle_doc" value="v_ins"> Vehicle Insurance</label>
-      <label><input type="radio" name="vehicle_doc" value="puc"> PUC</label>
-      <label><input type="radio" name="vehicle_doc" value="fc"> Fitness Certificate</label>
-      <label><input type="radio" name="vehicle_doc" value="pr"> Permit</label>
-
-      <div id="vehicle-upload" class="upload-field hidden">
-        <label for="vehicle-file">Upload Selected Vehicle Document:</label>
-        <input type="file" id="vehicle-file" name="vehicle-file" accept=".pdf,.jpg,.png">
-        <button id="upload-vehicle-btn" disabled>Upload</button>
-        <p id="vehicle-status" class="upload-status"></p>
-      </div>
-    </fieldset>
-
-     PERSONAL DOCUMENTS
-
-    <fieldset class="doc-group">
-      <legend>Personal Documents</legend>
-      <label><input type="radio" name="personal_doc" value="dl"> Driving License</label>
-      <label><input type="radio" name="personal_doc" value="adr"> Aadhar</label>
-      <label><input type="radio" name="personal_doc" value="pan"> PAN</label>
-      <label><input type="radio" name="personal_doc" value="m_ins"> Medical Insurance</label>
-      <label><input type="radio" name="personal_doc" value="prsc"> Current Prescription</label>
-
-      <div id="personal-upload" class="upload-field hidden">
-        <label for="personal-file">Upload Selected Personal Document:</label>
-        <input type="file" id="personal-file" name="personal-file" accept=".pdf,.jpg,.png">
-        <button id="upload-personal-btn" disabled>Upload</button>
-        <p id="personal-status" class="upload-status"></p>
-      </div>
-    </fieldset>
-  </div>
--->
-
+  
   <div class="form-actions">
-    <button type="submit" class="form-submit-btn" id="submitBtn">Submit Form</button>
+    <button type="submit" class="form-submit-btn" id="submitBtn" {% if form_disabled %}disabled{% endif %}>Submit Partner Details</button>
   </div>
-
+  <div class="message" style="margin-top: 20px;"><strong>{{message}}</strong></div>
 </form>
-<script src="{{ url_for('static', filename='js/manage_tabs.js') }}"></script>
-
+{% if form_disabled %}
+<script>
+    window.onload = function() {
+        // Smooth scroll to the bottom of the page
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    };
+</script>
+{% endif %}
 {% endblock %}

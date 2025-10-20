@@ -108,7 +108,7 @@
           modal.style.display = "none";
           body.classList.remove("modal-open");
 //          alert("Proceeding to next step...");
-          window.location.href = "/register_user";
+          window.location.href = "/home";
         }, 1200);
       } else {
         msg.textContent = "Invalid OTP. Please try again.";

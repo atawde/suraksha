@@ -3,10 +3,34 @@
 {% block title %}Login - My Website{% endblock %}
 
 {% block content %}
-<h1>Login</h1>
-<form method="POST" action="{{ url_for('plogin') }}">
-    <input type="text" name="username" placeholder="Enter username"><br>
-    <input type="password" name="password" placeholder="Enter password"><br>
-    <button type="submit">Login</button>
-</form>
+<div class="login-container">
+    <div class="login">
+        <h1>Login</h1>
+        <form method="POST" action="{{ url_for('plogin') }}">
+            <div class="form-row" style="display: flex; flex-direction: column; align-items: center; ">
+                <label for="mobile" style="margin-bottom: 5px;">Mobile Number *</label>
+                <input type="text" name="mobile" id="mobile" placeholder="Enter 10 digit mobile number" required size="23">
+            </div>
+            <button type="submit" id="submitBtn" style="width: 33%" onclick="validateMobile()">Login</button>
+        </form>
+        <p>
+            New user ? <a href="{{ url_for('new_user') }}">Register</a>
+        </p>
+    </div>
+</div>
+<script>
+    function validateMobile() {
+//        document.getElementById("submitBtn").onclick = async () => {
+      const phone = document.getElementById("mobile").value.trim();
+      if (!phone) {
+        alert("Please enter a valid mobile number");
+        return;
+      }
+      // Check: only digits and exactly 10 characters
+      if (!/^\d{10}$/.test(phone)) {
+         alert("Please enter a valid 10-digit mobile number.");
+         return;
+      }
+    }
+</script>
 {% endblock %}

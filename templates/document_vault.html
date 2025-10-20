@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}
+Suraksha Sarathy
+{% endblock %}
+
+{% block content %}
+
+<form action="/upload_document" method="POST" enctype="multipart/form-data" id="mainForm">
+  <div class="form-container">
+    <div class="form-section" style="margin-top: 50px;">
+        <strong>Document Locker</strong><br><br>
+        VEHICLE DOCUMENTS
+        <fieldset class="doc-group">
+          <legend>Vehicle Documents</legend>
+          <label><input type="radio" name="vehicle_doc" value="rc"> Registration Certificate</label>
+          <label><input type="radio" name="vehicle_doc" value="v_ins"> Vehicle Insurance</label>
+          <label><input type="radio" name="vehicle_doc" value="puc"> PUC</label>
+          <label><input type="radio" name="vehicle_doc" value="fc"> Fitness Certificate</label>
+          <label><input type="radio" name="vehicle_doc" value="pr"> Permit</label>
+          <div id="vehicle-upload" class="upload-field hidden">
+            <label for="vehicle-file">Upload Selected Vehicle Document:</label>
+            <input type="file" id="vehicle-file" name="vehicle-file" accept=".pdf,.jpg,.png">
+            <button id="upload-vehicle-btn" disabled>Upload</button>
+            <p id="vehicle-status" class="upload-status"></p>
+          </div>
+        </fieldset><br><br>
+        PERSONAL DOCUMENTS
+       <fieldset class="doc-group">
+          <legend>Personal Documents</legend>
+          <label><input type="radio" name="personal_doc" value="dl"> Driving License</label>
+          <label><input type="radio" name="personal_doc" value="adr"> Aadhar</label>
+          <label><input type="radio" name="personal_doc" value="pan"> PAN</label>
+          <label><input type="radio" name="personal_doc" value="m_ins"> Medical Insurance</label>
+          <label><input type="radio" name="personal_doc" value="prsc"> Current Prescription</label>
+          <div id="personal-upload" class="upload-field hidden">
+            <label for="personal-file">Upload Selected Personal Document:</label>
+            <input type="file" id="personal-file" name="personal-file" accept=".pdf,.jpg,.png">
+            <button id="upload-personal-btn" disabled>Upload</button>
+            <p id="personal-status" class="upload-status"></p>
+          </div>
+        </fieldset>
+    </div>
+  </div>
+</form>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // VEHICLE DOCUMENT SECTION
+    const vehicleRadios = document.querySelectorAll('input[name="vehicle_doc"]');
+    const vehicleUpload = document.getElementById("vehicle-upload");
+    const vehicleFile = document.getElementById("vehicle-file");
+    const vehicleBtn = document.getElementById("upload-vehicle-btn");
+    const vehicleStatus = document.getElementById("vehicle-status");
+    let selectedVehicleType = null;
+
+    vehicleRadios.forEach(radio => {
+        radio.addEventListener("change", function() {
+            selectedVehicleType = this.value;
+            vehicleUpload.classList.remove("hidden");
+            vehicleFile.value = "";
+            vehicleBtn.disabled = true;
+            vehicleStatus.textContent = "";
+        });
+    });
+
+    vehicleFile.addEventListener("change", function() {
+        vehicleBtn.disabled = !vehicleFile.files.length;
+    });
+
+    vehicleBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+
+        if (!selectedVehicleType || !vehicleFile.files.length) {
+            alert("Please select a vehicle document type and choose a file.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("doc_category", "vehicle");
+        formData.append("doc_type", selectedVehicleType);
+        formData.append("file", vehicleFile.files[0]);
+
+        vehicleBtn.disabled = true;
+        vehicleStatus.textContent = "⏳ Uploading...";
+
+        fetch("/upload_document", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                vehicleStatus.textContent = "✅ Uploaded successfully!";
+                vehicleStatus.style.color = "green";
+            } else {
+                vehicleStatus.textContent = "❌ Upload failed: " + data.error;
+                vehicleStatus.style.color = "red";
+                vehicleBtn.disabled = false;
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            vehicleStatus.textContent = "⚠️ Error uploading file.";
+            vehicleStatus.style.color = "red";
+            vehicleBtn.disabled = false;
+        });
+    });
+
+
+    // PERSONAL DOCUMENT SECTION
+    const personalRadios = document.querySelectorAll('input[name="personal_doc"]');
+    const personalUpload = document.getElementById("personal-upload");
+    const personalFile = document.getElementById("personal-file");
+    const personalBtn = document.getElementById("upload-personal-btn");
+    const personalStatus = document.getElementById("personal-status");
+    let selectedPersonalType = null;
+
+    personalRadios.forEach(radio => {
+        radio.addEventListener("change", function() {
+            selectedPersonalType = this.value;
+            personalUpload.classList.remove("hidden");
+            personalFile.value = "";
+            personalBtn.disabled = true;
+            personalStatus.textContent = "";
+        });
+    });
+
+    personalFile.addEventListener("change", function() {
+        personalBtn.disabled = !personalFile.files.length;
+    });
+
+    personalBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+
+        if (!selectedPersonalType || !personalFile.files.length) {
+            alert("Please select a personal document type and choose a file.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("doc_category", "personal");
+        formData.append("doc_type", selectedPersonalType);
+        formData.append("file", personalFile.files[0]);
+
+        personalBtn.disabled = true;
+        personalStatus.textContent = "⏳ Uploading...";
+
+        fetch("/upload_document", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                personalStatus.textContent = "✅ Uploaded successfully!";
+                personalStatus.style.color = "green";
+            } else {
+                personalStatus.textContent = "❌ Upload failed: " + data.error;
+                personalStatus.style.color = "red";
+                personalBtn.disabled = false;
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            personalStatus.textContent = "⚠️ Error uploading file.";
+            personalStatus.style.color = "red";
+            personalBtn.disabled = false;
+        });
+    });
+});
+</script>
+
+{% endblock %}

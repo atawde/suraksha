@@ -183,6 +183,10 @@ margin-left: 0;
   transform: translateY(2px);
 }
 
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 .grid-container > div.header {grid-area: header;}
 .grid-container > div.sidebar1 {grid-area: sidebar1;}
@@ -370,12 +374,41 @@ button:disabled {
   font-size: 0.9rem;
 }
 
+.contact-container {
+  display: flex;
+  justify-content: center;     /* center horizontally */
+  align-items: center;         /* center vertically */
+  min-height: 100vh;           /* take full screen height */
+}
+
 .contact {
-  padding-left: 400px;
-  padding-bottom: 20px;
+  width: 60%;
+  background-color: #FFE4EC;
+  padding: 20px 40px;
   border: 5px solid darkgray;
   border-radius: 20px;
-  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  color: #6B0F1A;
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;     /* center horizontally */
+  align-items: center;         /* center vertically */
+  min-height: 70vh;           /* take full screen height */
+}
+
+.login {
+  width: 60%;
+  background-color: #FFE4EC;
+  padding: 20px 40px;
+  border: 5px solid darkgray;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  color: #6B0F1A;
 }
 
 /* Submit Button */

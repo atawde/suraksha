@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}
+Suraksha Sarathy
+{% endblock %}
+
+{% block content %}
+
+<form action="/new_user_form" method="POST" enctype="multipart/form-data" id="mainForm">
+  <div class="form-container">
+    <div class="form-section" style="margin-top: 50px;">
+        <strong>New User Details</strong>
+        <div class="form-row">
+            <div style="margin-top: 10px;">
+                <label for "cust_name">Name *</label>
+            </div>
+            <div style="margin-top: 10px;">
+                <input type="text" id="cust_name" name="cust_name" {% if form_disabled %}disabled{% endif %} required size="40" >
+            </div>
+            <div style="margin-top: 10px;">
+                <label for "cust_mobile" >Mobile Number *</label>
+            </div>
+            <div style="margin-top: 10px;">
+                <input type="text" id="cust_mobile" name="cust_mobile" {% if form_disabled %}disabled{% endif %} required size="40" >
+            </div>
+            <div style="margin-top: 10px;">
+                <label for "cust_email">Email Id*</label>
+            </div>
+            <div style="margin-top: 10px;">
+                <input type="text" id="cust_email" name="cust_email" {% if form_disabled %}disabled{% endif %} size="40" >
+            </div>
+        </div>
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="form-submit-btn" id="submitBtn" {% if form_disabled %}disabled{% endif %}>Submit New User Request</button>
+    </div>
+    <div class="message" style="margin-top: 20px;"><strong>{{message}}</strong></div>
+  </div>
+</form>
+
+{% endblock %}

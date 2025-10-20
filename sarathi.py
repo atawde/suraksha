@@ -73,8 +73,98 @@ DB_FILE = 'suraksha_sarthi_db'
 account_sid = os.getenv("TWILIO_ACCOUNT_SID")
 auth_token = os.getenv("TWILIO_AUTH_TOKEN")
 twilio_phone = os.getenv("TWILIO_PHONE")
+UPLOAD_FOLDER = "uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-print(f"SID {account_sid} token {auth_token} phone {twilio_phone}")
+def init_db():
+    with sqlite3.connect(DB_FILE) as conn:
+        conn.execute("""
+        CREATE TABLE IF NOT EXISTS otps (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            phone TEXT NOT NULL,
+            otp TEXT NOT NULL,
+            expires_at DATETIME NOT NULL
+        )
+        """)
+        conn.commit()
+
+    with sqlite3.connect(DB_FILE) as conn:
+        conn.execute("""
+        CREATE TABLE IF NOT EXISTS registered_users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            phone TEXT NOT NULL,
+            email TEXT ,
+            name TEXT NOT NULL,
+            created_on DATE NOT NULL
+        )
+        """)
+        conn.commit()
+
+    create_table_statement = """                      
+        CREATE TABLE IF NOT EXISTS customer_details (    
+            customer_id INTEGER PRIMARY KEY AUTOINCREMENT,            
+            cust_name text,
+            cust_mobile text,
+            house text,
+            building text,
+            address1 text,
+            address2 text,
+            city text,
+            state text,
+            pin text,  
+            e1_name text,
+            e1_relation text,
+            e1_number text,
+            e2_name text,
+            e2_relation text,
+            e2_number text,
+            e3_name text,
+            e3_relation text,
+            e3_number text,
+            plate text,
+            vhp text,
+            vhipn text,
+            from_dt text,
+            to_dt text,
+            bgrp text,
+            fam_doctor text,
+            doctor_number text,
+            med_history text,
+            hip text,
+            hipn text,
+            h_from_dt date,
+            h_to_dt date,
+            driver_name text,
+            driver_mobile text,
+            d_e1_name text,
+            d_e1_relation text,
+            d_e1_number text,
+            d_e2_name text,
+            d_e2_relation text,
+            d_e2_number text,
+            d_e3_name text,
+            d_e3_relation text,
+            d_e3_number text,
+            d_bgrp text,
+            d_fam_doctor text,
+            d_doctor_number text,
+            d_med_history text,
+            d_hip text,
+            d_hipn text,
+            d_h_from_dt date,
+            d_h_to_dt date,
+            date_created date,
+            date_updated date
+        )
+    """
+
+    with sqlite3.connect(DB_FILE) as conn:
+        conn.execute(create_table_statement)
+    conn.commit()
+
+init_db()
+
+#print(f"SID {account_sid} token {auth_token} phone {twilio_phone}")
 
 env = Environment(loader = FileSystemLoader('templates'))
 logging.basicConfig(level=logging.DEBUG)
@@ -105,22 +195,60 @@ def how():
 def gallery():
     return render_template("gallery.html")
 
-@app.route("/member")
-def member():
-    return render_template("request_otp.html")
+@app.route("/quick_alert", methods=['POST'])
+def quick_alert():
+    if request.method == 'POST':
+        return render_template("quick_alert.html")
+
+@app.route("/upload_document", methods=['POST'])
+def upload_document():
+    doc_category = request.form.get('doc_category')  # "vehicle" or "personal"
+    doc_type = request.form.get('doc_type')          # e.g. "rc", "dl", etc.
+    file = request.files.get('file')
+
+    if not doc_category or not doc_type or not file:
+        return jsonify(success=False, error="Missing required fields")
+
+    # Create folder structure like: uploads/vehicle/ or uploads/personal/
+    folder_path = os.path.join(UPLOAD_FOLDER, doc_category)
+    os.makedirs(folder_path, exist_ok=True)
+
+    # Save file with unique name
+    filename = f"{doc_type}_{file.filename}"
+    file.save(os.path.join(folder_path, filename))
+
+    return jsonify(success=True)
+
+@app.route("/emergency_alert", methods=['POST'])
+def emergency_alert():
+    if request.method == 'POST':
+        return render_template("emergency_alert.html")
 
 @app.route("/partner")
 def partner():
     return render_template("partner_login.html")
+
+@app.route("/new_user")
+def new_user():
+    return render_template("new_user.html")
+
+@app.route("/document_vault", methods=['POST'])
+def document_vault():
+    if request.method == 'POST':
+        return render_template("document_vault.html")
+
+@app.route("/logout")
+def logout():
+    return render_template("home.html")
 
 @app.route("/manage_otp", methods=['POST'])
 def manage_otp():
     if request.method == 'POST':
         return render_template("request_otp.html")
 
-@app.route("/register_user", methods=['GET'])
+@app.route("/register_user", methods=['POST'])
 def register_user():
-    if request.method == 'GET':
+    if request.method == 'POST':
 #        customer = {"name": "John Doe",
 #                    "email": "john@example.com",
 #                    "phone": "+1 555 123 4567",
@@ -134,16 +262,46 @@ def register_user():
 @app.route("/plogin", methods=['POST'])
 def plogin():
     if request.method == 'POST':
-        return '<p>Partner logged in </p>'
-    
-@app.route("/mlogin", methods=['POST'])
-def mlogin():
+        phone = request.form.get('mobile')
+        try:
+            with sqlite3.connect(DB_FILE) as conn:
+                conn.row_factory = sqlite3.Row  # optional, allows dict-like access
+            # create a cursor
+                cursor = conn.cursor()
+            # execute statements
+                cursor.execute("SELECT * FROM registered_users WHERE phone = ?", (phone,))
+                user = cursor.fetchone()
+        except sqlite3.OperationalError as e:
+            print("Database error :", e)
+
+        if user:
+            otp = process_otp(phone)
+            return render_template("verify_otp.html", mnumber=phone, otp = otp)
+        else:
+            return render_template("new_user.html")
+
+@app.route("/new_user_form", methods=['POST'])
+def new_user_form():
     if request.method == 'POST':
-        return '<p>Member logged in </p>'
-    
-#@app.route("/", methods=['GET', 'POST'])
-#def home():
-#    return render_template('qr_details.html', img_file="placeholder.png")
+        phone = request.form.get('cust_mobile')
+        name = request.form.get('cust_name')
+        email = request.form.get('cust_email')
+        today = datetime.date.today().isoformat()
+
+        insert_statement = f"INSERT INTO registered_users('phone','email','name', 'created_on') VALUES (phone,email,name,today)"
+        print(insert_statement)
+
+        try:
+            with sqlite3.connect(DB_FILE) as conn:
+            # create a cursor
+                cursor = conn.cursor()
+            # execute statements
+                cursor.execute(insert_statement)
+        except sqlite3.OperationalError as e:
+            print("Database error :", e)        
+
+    print("Customer Details inserted successfully.")
+    return render_template("new_user.html", message=f"User {name} with mobile {phone} created succesfully !!!",form_disabled=True)
 
 @app.route("/submit-form", methods=['POST'])
 def register_customer():
@@ -201,7 +359,7 @@ def register_customer():
 
 #            generate_qrcode()
         save_customer_details()
-        return render_template('qr_download.html', img_file="my_qrcode.png")
+        return render_template('customer_tabs.html', message="Customer details saved succesfully !!!", form_disabled=True)
         
 #        return render_template('qr_details.html', img_file="placeholder.png")  #for Get method display the same form
 
@@ -235,63 +393,6 @@ def generate_qrcode():
 
 def save_customer_details():
 
-    create_table_statement = """                      
-        CREATE TABLE IF NOT EXISTS customer_details (    
-            customer_id INTEGER PRIMARY KEY,            
-            cust_name text,
-            cust_mobile text,
-            house text,
-            building text,
-            address1 text,
-            address2 text,
-            city text,
-            state text,
-            pin text,  
-            e1_name text,
-            e1_relation text,
-            e1_number text,
-            e2_name text,
-            e2_relation text,
-            e2_number text,
-            e3_name text,
-            e3_relation text,
-            e3_number text,
-            plate text,
-            vhp text,
-            vhipn text,
-            from_dt text,
-            to_dt text,
-            bgrp text,
-            fam_doctor text,
-            doctor_number text,
-            med_history text,
-            hip text,
-            hipn text,
-            h_from_dt date,
-            h_to_dt date,
-            driver_name text,
-            driver_mobile text,
-            d_e1_name text,
-            d_e1_relation text,
-            d_e1_number text,
-            d_e2_name text,
-            d_e2_relation text,
-            d_e2_number text,
-            d_e3_name text,
-            d_e3_relation text,
-            d_e3_number text,
-            d_bgrp text,
-            d_fam_doctor text,
-            d_doctor_number text,
-            d_med_history text,
-            d_hip text,
-            d_hipn text,
-            d_h_from_dt date,
-            d_h_to_dt date,
-            date_created date,
-            date_updated date,
-        );"""
-
     today = datetime.date.today().isoformat()
     data['date_created'] = today
     data['date_updated'] = today
@@ -307,7 +408,6 @@ def save_customer_details():
         # create a cursor
             cursor = conn.cursor()
         # execute statements
-            cursor.execute(create_table_statement)
             cursor.execute(insert_statement, data)
         # commit the changes
             conn.commit()
@@ -316,19 +416,6 @@ def save_customer_details():
     except sqlite3.OperationalError as e:
         print("Failed to create tables:", e)
 
-def init_db():
-    with sqlite3.connect(DB_FILE) as conn:
-        conn.execute("""
-        CREATE TABLE IF NOT EXISTS otps (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            phone TEXT NOT NULL,
-            otp TEXT NOT NULL,
-            expires_at DATETIME NOT NULL
-        )
-        """)
-        conn.commit()
-
-init_db()
 
 # --- OTP Generator ---
 def generate_otp():
@@ -341,20 +428,22 @@ def request_otp():
     if not phone:
         return f"error: phone required"
 
+    otp = process_otp(phone)
+    return render_template("verify_otp.html", mnumber=phone, otp = otp)
+
+def process_otp(phone):
     with sqlite3.connect(DB_FILE) as conn:
         # 1. Delete expired OTPs before creating a new one
         conn.execute("DELETE FROM otps WHERE expires_at < ?", (datetime.utcnow(),))
-        
+     
         # 2. Generate OTP
         otp = generate_otp()
         expires_at = datetime.utcnow() + timedelta(minutes=5)
         conn.execute("INSERT INTO otps (phone, otp, expires_at) VALUES (?, ?, ?)",
                      (phone, otp, expires_at))
         conn.commit()
-
-    # In production, send OTP via SMS API (Twilio, MSG91, etc.)
-    return render_template("verify_otp.html", mnumber=phone, otp = otp)
-    
+        return otp
+   
 # --- Verify OTP ---
 @app.route("/send_otp", methods=["POST"])
 def send_otp():
