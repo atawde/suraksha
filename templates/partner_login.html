@@ -3,34 +3,41 @@
 {% block title %}Login - My Website{% endblock %}
 
 {% block content %}
+
+<style>
+    input, button { margin: 5px; padding: 10px; }
+    #otp-section { display: none; margin-top: 15px; }
+    #message { margin-top: 10px; color: green; }
+    #error { margin-top: 10px; color: red; }
+    #resendBtn { display: none; }
+    #timer { color: gray; font-size: 0.9em; margin-left: 8px; }
+  </style>
+
 <div class="login-container">
-    <div class="login">
+    <div id="step1" class="login">
         <h1>Login</h1>
-        <form method="POST" action="{{ url_for('plogin') }}">
-            <div class="form-row" style="display: flex; flex-direction: column; align-items: center; ">
-                <label for="mobile" style="margin-bottom: 5px;">Mobile Number *</label>
-                <input type="text" name="mobile" id="mobile" placeholder="Enter 10 digit mobile number" required size="23">
-            </div>
-            <button type="submit" id="submitBtn" style="width: 33%" onclick="validateMobile()">Login</button>
-        </form>
+        <label for="mobile" style="margin-bottom: 5px;">Mobile Number *</label>
+        <input type="text" name="mobile" id="mobile" placeholder="Enter 10 digit mobile number" required size="23">
+        <button id="sendOtpBtn">Send OTP</button>
+        <button id="cancelBtn">Cancel</button>
         <p>
             New user ? <a href="{{ url_for('new_user') }}">Register</a>
         </p>
     </div>
+
+    <div id="otp-section">
+        <label>Enter OTP:</label>
+        <input type="text" id="otpInput" maxlength="6" placeholder="6-digit OTP">
+        <button id="verifyBtn">Verify OTP</button>
+        <button id="resendBtn" disabled>Resend OTP</button>
+        <span id="timer"></span>
+    </div>
+
+    <p id="message"></p>
+    <p id="error"></p>
 </div>
-<script>
-    function validateMobile() {
-//        document.getElementById("submitBtn").onclick = async () => {
-      const phone = document.getElementById("mobile").value.trim();
-      if (!phone) {
-        alert("Please enter a valid mobile number");
-        return;
-      }
-      // Check: only digits and exactly 10 characters
-      if (!/^\d{10}$/.test(phone)) {
-         alert("Please enter a valid 10-digit mobile number.");
-         return;
-      }
-    }
-</script>
+
+<!-- Link to JS -->
+  <script src="{{ url_for('static', filename='js/manage_otp.js') }}"></script>
+
 {% endblock %}

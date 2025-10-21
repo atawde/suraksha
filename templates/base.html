@@ -15,8 +15,13 @@
         <a href="{{ url_for('contact') }}">Contact Us</a> |
         <a href="{{ url_for('how') }}">How It Works</a> |
         <a href="{{ url_for('gallery') }}">Gallery</a> |
-        <a href="{{ url_for('partner') }}">Partner Login</a> |
-        <a href="{{ url_for('logout') }}">Logout</a>
+        {% if session.get('logged_in') %}
+            <span>Welcome, {{ session.get('user_name') }}</span>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('partner') }}">Partner Login |</a>
+            <span style="color: grey;">Logout</span> <!-- or hide -->
+        {% endif %}
     </nav>
 
     <div class="home_heading">

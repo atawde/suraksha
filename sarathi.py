@@ -5,12 +5,13 @@ from jinja2 import Environment, FileSystemLoader
 import logging
 import sqlite3
 from datetime import timedelta
-import datetime
+from datetime import datetime, timezone, date
 import secrets
 import random
 from twilio.rest import Client
 from dotenv import load_dotenv
 import os
+import time
 
 # Data to encode
 data = {
@@ -239,6 +240,7 @@ def document_vault():
 
 @app.route("/logout")
 def logout():
+    session.clear()
     return render_template("home.html")
 
 @app.route("/manage_otp", methods=['POST'])
@@ -249,20 +251,13 @@ def manage_otp():
 @app.route("/register_user", methods=['POST'])
 def register_user():
     if request.method == 'POST':
-#        customer = {"name": "John Doe",
-#                    "email": "john@example.com",
-#                    "phone": "+1 555 123 4567",
-#                    "vehicles": [{"make": "Toyota", "model": "Corolla", "reg": "ABC-1234", "year": 2019},
-#                                 {"make": "Honda", "model": "Civic", "reg": "XYZ-9876", "year": 2020}
-#                                ],
-#                    "notes": "Premium customer. Prefers email communication."
-#                    }
         return render_template("customer_tabs.html", ) # customer=customer)
     
 @app.route("/plogin", methods=['POST'])
 def plogin():
     if request.method == 'POST':
         phone = request.form.get('mobile')
+        print(f"Phone from UI is {phone}")
         try:
             with sqlite3.connect(DB_FILE) as conn:
                 conn.row_factory = sqlite3.Row  # optional, allows dict-like access
@@ -271,11 +266,20 @@ def plogin():
             # execute statements
                 cursor.execute("SELECT * FROM registered_users WHERE phone = ?", (phone,))
                 user = cursor.fetchone()
+                print(f"Phone from DB is {user['phone']}")
         except sqlite3.OperationalError as e:
             print("Database error :", e)
 
         if user:
             otp = process_otp(phone)
+            client = Client(account_sid, auth_token)
+            print(f"Sending sms to {phone} phone")
+            message = client.messages.create(
+                body=f"Your verification code is {otp}",
+                from_=twilio_phone,
+                to='+91'+phone
+            )
+            print("Sent OTP:", otp, "to", phone)
             return render_template("verify_otp.html", mnumber=phone, otp = otp)
         else:
             return render_template("new_user.html")
@@ -286,9 +290,9 @@ def new_user_form():
         phone = request.form.get('cust_mobile')
         name = request.form.get('cust_name')
         email = request.form.get('cust_email')
-        today = datetime.date.today().isoformat()
+        today = date.today().isoformat()
 
-        insert_statement = f"INSERT INTO registered_users('phone','email','name', 'created_on') VALUES (phone,email,name,today)"
+        insert_statement = "INSERT INTO registered_users (phone, email, name, created_on) VALUES (?, ?, ?, ?)", (phone, email, name, today)
         print(insert_statement)
 
         try:
@@ -296,7 +300,7 @@ def new_user_form():
             # create a cursor
                 cursor = conn.cursor()
             # execute statements
-                cursor.execute(insert_statement)
+                cursor.execute("INSERT INTO registered_users (phone, email, name, created_on) VALUES (?, ?, ?, ?)", (phone, email, name, today))
         except sqlite3.OperationalError as e:
             print("Database error :", e)        
 
@@ -393,7 +397,7 @@ def generate_qrcode():
 
 def save_customer_details():
 
-    today = datetime.date.today().isoformat()
+    today = date.today().isoformat()
     data['date_created'] = today
     data['date_updated'] = today
     
@@ -431,39 +435,86 @@ def request_otp():
     otp = process_otp(phone)
     return render_template("verify_otp.html", mnumber=phone, otp = otp)
 
-def process_otp(phone):
-    with sqlite3.connect(DB_FILE) as conn:
-        # 1. Delete expired OTPs before creating a new one
-        conn.execute("DELETE FROM otps WHERE expires_at < ?", (datetime.utcnow(),))
-     
-        # 2. Generate OTP
-        otp = generate_otp()
-        expires_at = datetime.utcnow() + timedelta(minutes=5)
-        conn.execute("INSERT INTO otps (phone, otp, expires_at) VALUES (?, ?, ?)",
-                     (phone, otp, expires_at))
-        conn.commit()
-        return otp
+def process_otp(phone, retries=5, delay=0.2):
+    now_utc = datetime.now(timezone.utc)
+    current_str = now_utc.replace(tzinfo=None).strftime("%Y-%m-%d %H:%M:%S")
+    expiry_utc = now_utc + timedelta(minutes=5)
+    expiry_str = expiry_utc.replace(tzinfo=None).strftime("%Y-%m-%d %H:%M:%S")
+
+    otp = generate_otp()
+
+    return otp
+
+"""
+    for attempt in range(retries):
+        try:
+            with sqlite3.connect(DB_FILE, timeout=10, isolation_level=None) as conn:
+                conn.execute("PRAGMA journal_mode=WAL;")
+                
+                # acquire write lock immediately
+                conn.execute("BEGIN IMMEDIATE;")
+                
+                # Delete expired OTPs
+                # conn.execute("DELETE FROM otps WHERE expires_at < ?", (current_str,))
+                 
+                # Insert new OTP
+                conn.execute(
+                    "INSERT INTO otps (phone, otp, expires_at) VALUES (?, ?, ?)",
+                    (phone, otp, expiry_str)
+                )
+                
+                conn.commit()
+            return otp
+        except sqlite3.OperationalError as e:
+            if "database is locked" in str(e):
+                time.sleep(delay)  # wait and retry
+            else:
+                raise
+    raise sqlite3.OperationalError("Database is locked after multiple retries")
+"""
    
 # --- Verify OTP ---
 @app.route("/send_otp", methods=["POST"])
 def send_otp():
     data = request.get_json()
-    phone = data.get("phone")
-    otp = data.get("otp")
+    phone = data.get('phone')
+    otp = data.get('otp')
 
-    if not phone or not otp:
-        return jsonify({"error": "Missing phone or otp"}), 400
+    if not all([phone, otp]):
+        return jsonify({'success': False, 'error': 'Missing parameters'})
 
-    client = Client(account_sid, auth_token)
-    message = client.messages.create(
-        body=f"Your verification code is {otp}",
-        from_=twilio_phone,
-        to=phone
-    )
+    print(f"Phone from UI is {phone}")
+    try:
+        with sqlite3.connect(DB_FILE) as conn:
+            conn.row_factory = sqlite3.Row  # optional, allows dict-like access
+            # create a cursor
+            cursor = conn.cursor()
+            # execute statements
+            cursor.execute("SELECT * FROM registered_users WHERE phone = ?", (phone,))
+            user = cursor.fetchone()
+            if not user:
+                return jsonify({'success': False, 'new_user_required': True})
+            print(f"Phone from DB is {user['phone']}")
+            session['user_name'] = user['name']
+            session['user_phone'] = user['phone']
+            session['logged_in'] = True
+    except sqlite3.OperationalError as e:
+        print("Database error :", e)
+
+    try:
+        client = Client(account_sid, auth_token)
+        message = client.messages.create(
+                body=f"Your verification code is {otp}",
+                from_=twilio_phone,
+                to='+91'+phone
+        )
+        print(f"OTP {otp} sent to {phone}")
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
 
     print("Sent OTP:", otp, "to", phone)
     return jsonify({"message": "OTP sent successfully"})
-
 
 if __name__== "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

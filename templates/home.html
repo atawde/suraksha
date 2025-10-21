@@ -8,19 +8,19 @@ Suraksha Sarathy
 
 <div class="home-grid-container">
     <form action="/register_user", method="POST">
-        <button class="button-30" type="submit">User Registration</button>
+        <button class="button-30" type="submit" {% if not session.get('logged_in') %}disabled{% endif %}>User Registration</button>
     </form>
 
     <form action="/document_vault", method="POST">
-        <button class="button-30" type="submit">Document Vault</button>
+        <button class="button-30" type="submit" {% if not session.get('logged_in') %}disabled{% endif %}>Document Vault</button>
     </form>
 
     <form action="/quick_alert", method="POST">
-        <button class="button-30">Quick Alert</button>
+        <button class="button-30" {% if not session.get('logged_in') %}disabled{% endif %}>Quick Alert</button>
     </form>
 
     <form action="/emergency_alert", method="POST">
-        <button class="button-30">Emergency Alert</button>
+        <button class="button-30" {% if not session.get('logged_in') %}disabled{% endif %}>Emergency Alert</button>
     </form>
 </div>
 

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Login - My Website{% endblock %}
+
+{% block content %}
+
+    <div class="form-container">
+        <div class="form-section" style="margin-top: 50px;">
+            <strong>Verify Mobile Number</strong><br><br>
+            <div>
+                <label for "mnumber">Mobile Number</label>
+                <input type="text" name="mnumber" readonly value="{{ mnumber }}"><br><br>
+            </div>
+            <div>
+                <label for "otp">OTP</label>
+                <input type="password" name="otp" id="otpInput"><br><br>
+                <p style="visibility: hidden;" id="backendOTP">{{ otp }}</p>
+            </div>
+            <div>
+                <button type="submit" id="verifyOtpBtn" onclick="verifyOTP()">Verify OTP</button>
+                <button type="submit" id="resendBtn" onclick="resendOTP()">Resend OTP</button>
+                <button type="submit" id="cancelBtn" onclick="cancelOTP()">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div><p id="statusMsg"></p></div>
+
+<script src="{{ url_for('static', filename='js/manage_otp.js') }}"></script>
+{% endblock %}

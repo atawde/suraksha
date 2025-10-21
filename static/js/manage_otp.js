@@ -1,63 +1,124 @@
+let generatedOTP = null;
+let otpSentTime = null;
+let resendTimer = null;
+let resendCountdown = 10; // seconds before resend is allowed
 
-    let generatedOtp = null;
-    let otpExpiryTime = null;
-    let otpTimer = null;
-    let resendCountdown = null;
-    let resendTimer = null;
+const sendBtn = document.getElementById('sendOtpBtn');
+const resendBtn = document.getElementById('resendBtn');
+const cancelBtn = document.getElementById('cancelBtn');
+const verifyBtn = document.getElementById('verifyBtn');
+const message = document.getElementById('message');
+const error = document.getElementById('error');
+const timer = document.getElementById('timer');
+const otpSection = document.getElementById('otp-section');
+const mobileInput = document.getElementById('mobile');
 
-    const modal = document.getElementById("otpModal");
-    const body = document.body;
-    const resendBtn = document.getElementById("resendBtn");
+async function sendOtp() {
+  const mobile = mobileInput.value.trim();
+  message.textContent = '';
+  error.textContent = '';
 
-    function startResendCountdown() {
-      let remaining = 30;
-      resendBtn.disabled = true;
-      resendBtn.textContent = `Resend OTP (30s)`;
+//  if (!mobile.startsWith('+') || mobile.length < 10) {
+//    error.textContent = 'Please enter a valid mobile number with country code.';
+//    return;
+//  }
 
-      resendTimer = setInterval(() => {
-        remaining--;
-        resendBtn.textContent = `Resend OTP (${remaining}s)`;
-        if (remaining <= 0) {
-          clearInterval(resendTimer);
-          resendBtn.disabled = false;
-          resendBtn.textContent = "Resend OTP";
-        }
-      }, 1000);
+  // Generate OTP
+  generatedOTP = Math.floor(100000 + Math.random() * 900000);
+  otpSentTime = Date.now();
+  console.log("Generated OTP:", generatedOTP); // for testing
+
+  // Call backend Twilio API
+  try {
+    const response = await fetch('/send_otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: mobile, otp: generatedOTP })
+    });
+    const data = await response.json();
+
+    if (data.new_user_required) {
+      // redirect to registration page
+      window.location.href = '/new_user';
+      return;
     }
 
-    async function sendOtp(phone) {
-      generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-      otpExpiryTime = Date.now() + 5 * 60 * 1000;
-
-      try {
-        await fetch("/send_otp", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone, otp: generatedOtp })
-        });
-      } catch (err) {
-        alert("Failed to send OTP. Check backend logs.");
-        return false;
-      }
-
-      document.getElementById("otpInfo").textContent = `OTP sent to ${phone}. Valid for 5 minutes.`;
-      document.getElementById("statusMsg").textContent = "";
-      startResendCountdown();
-
-      if (otpTimer) clearInterval(otpTimer);
-      otpTimer = setInterval(() => {
-        if (Date.now() > otpExpiryTime) {
-          clearInterval(otpTimer);
-          document.getElementById("statusMsg").textContent = "❌ OTP expired. Please resend.";
-          document.getElementById("statusMsg").style.color = "red";
-        }
-      }, 1000);
-
-      return true;
+    if (data.success) {
+      message.textContent = 'OTP sent successfully! Please check your SMS.';
+      otpSection.style.display = 'block';
+      startResendTimer();
+    } else {
+      error.textContent = 'Error sending OTP: ' + data.error;
     }
+  } catch (e) {
+    error.textContent = 'Network error: ' + e.message;
+  }
+}
 
-    document.getElementById("sendOtpBtn").onclick = async () => {
-      const phone = document.getElementById("phone").value.trim();
+// Verify OTP
+function verifyOtp() {
+  const enteredOtp = document.getElementById('otpInput').value.trim();
+  message.textContent = '';
+  error.textContent = '';
+
+  if (!generatedOTP) {
+    error.textContent = 'Please generate an OTP first.';
+    return;
+  }
+
+  // Expiry check (5 mins)
+  if (Date.now() - otpSentTime > 5 * 60 * 1000) {
+    error.textContent = 'OTP expired. Please request a new one.';
+    generatedOTP = null;
+    return;
+  }
+
+  if (enteredOtp === generatedOTP.toString()) {
+    message.textContent = '✅ OTP Verified Successfully!';
+    error.textContent = '';
+    document.getElementById('verifyBtn').disabled = true;
+    // Redirect after 5 seconds
+    setTimeout(() => {
+      window.location.href = '/';  // redirect to home page
+    }, 5000);
+  } else {
+    error.textContent = '❌ Incorrect OTP. Please try again.';
+  }
+}
+
+// Timer for enabling resend button
+function startResendTimer() {
+  resendCountdown = 10;
+  resendBtn.disabled = true;
+  resendBtn.style.display = 'inline';
+  timer.textContent = `Try again in ${resendCountdown}s`;
+
+  clearInterval(resendTimer);
+  resendTimer = setInterval(() => {
+    resendCountdown--;
+    if (resendCountdown > 0) {
+      timer.textContent = `Try again in ${resendCountdown}s`;
+    } else {
+      clearInterval(resendTimer);
+      timer.textContent = '';
+      resendBtn.disabled = false;
+    }
+  }, 1000);
+}
+
+// Cancel -> Go back home
+cancelBtn.addEventListener('click', () => {
+  window.location.href = '/'; // adjust as per your route
+});
+
+// Event bindings
+sendBtn.addEventListener('click', sendOtp);
+resendBtn.addEventListener('click', sendOtp);
+verifyBtn.addEventListener('click', verifyOtp);
+
+function validateMobile() {
+//        document.getElementById("submitBtn").onclick = async () => {
+      const phone = document.getElementById("mobile").value.trim();
       if (!phone) {
         alert("Please enter a valid mobile number");
         return;
@@ -67,64 +128,5 @@
          alert("Please enter a valid 10-digit mobile number.");
          return;
       }
-      // Prepend +91
-      const fullNumber = "+91" + phone;
-//      alert("Formatted number: " + fullNumber);
-
-      const ok = await sendOtp(fullNumber);
-      if (ok) {
-        modal.style.display = "flex";
-        body.classList.add("modal-open");
-      }
-    };
-
-    resendBtn.onclick = async () => {
-      const phone = document.getElementById("phone").value.trim();
-      const fullNumber = "+91" + phone;
-      const ok = await sendOtp(fullNumber);
-      if (ok) {
-        document.getElementById("statusMsg").textContent = "🔄 OTP resent successfully!";
-        document.getElementById("statusMsg").style.color = "green";
-      }
-    };
-
-    document.getElementById("verifyOtpBtn").onclick = () => {
-      const entered = document.getElementById("otpInput").value.trim();
-      const msg = document.getElementById("statusMsg");
-
-      if (Date.now() > otpExpiryTime) {
-        msg.textContent = "❌ OTP expired. Please resend.";
-        msg.style.color = "red";
-        return;
-      }
-
-      if (entered === generatedOtp) {
-        msg.textContent = "✅ OTP verified successfully!";
-        msg.style.color = "green";
-        clearInterval(otpTimer);
-        clearInterval(resendTimer);
-
-        setTimeout(() => {
-          modal.style.display = "none";
-          body.classList.remove("modal-open");
-//          alert("Proceeding to next step...");
-          window.location.href = "/home";
-        }, 1200);
-      } else {
-        msg.textContent = "Invalid OTP. Please try again.";
-        msg.style.color = "red";
-      }
-    };
-
-    document.getElementById("cancelBtn").onclick = () => {
-      if (confirm("Cancel verification and return to home?")) {
-        clearInterval(otpTimer);
-        clearInterval(resendTimer);
-        modal.style.display = "none";
-        body.classList.remove("modal-open");
-//        alert("Returning to home screen...");
-        window.location.href = "/home.html";
-      }
-    };
-
+    }
 
